@@ -1,43 +1,45 @@
-🤖 Trading Phantom
-Plataforma de Trading Algorítmico en MetaTrader 5 (Python)
-📌 Descripción General
+````md
+# 🤖 Trading Phantom
+### Plataforma de Trading Algorítmico en MetaTrader 5 (Python)
 
-Trading Phantom es una plataforma de trading algorítmico desarrollada en Python, diseñada para operar con MetaTrader 5 (MT5) mediante su API oficial.
+> **Trading Phantom** es una plataforma de trading algorítmico diseñada con enfoque profesional para operar en **MetaTrader 5 (MT5)** mediante su **API oficial en Python**.
 
-El objetivo del proyecto es construir una arquitectura profesional, robusta y extensible, capaz de:
+---
 
-Ejecutar estrategias de trading automáticas
+## 📌 Descripción General
 
-Gestionar riesgo de forma estricta
+El objetivo del proyecto es construir una **arquitectura robusta, extensible y segura**, capaz de:
 
-Interactuar de manera segura con brokers reales
+- ⚙️ Ejecutar estrategias de trading automáticas  
+- 🛡️ Gestionar el riesgo de forma estricta  
+- 🔌 Interactuar de manera segura con brokers reales  
+- 🚫 Evitar errores comunes de MT5 (volumen, stops, horarios, permisos)  
+- 📈 Servir como base para backtesting, optimización y trading en real  
 
-Evitar errores comunes de MT5 (volumen, stops, horarios, permisos)
+> ⚠️ Este **no es un bot “rápido”**, sino una **base sólida de trading algorítmico real**.
 
-Servir como base para backtesting, optimización y despliegue en real
+---
 
-Este proyecto no es un bot “rápido”, sino una base sólida de trading algorítmico real.
+## 🧠 Filosofía del Proyecto
 
-🧠 Filosofía del Proyecto
+Trading Phantom sigue principios **profesionales y realistas**:
 
-Este proyecto está diseñado siguiendo principios profesionales:
+- ❌ No forzar operaciones  
+- ❌ No ignorar reglas del broker  
+- ❌ No “parchear” errores sin entenderlos  
 
-❌ No forzar operaciones
+- ✅ Validar todo antes de enviar una orden  
+- ✅ Fallar de forma controlada y explicable  
+- ✅ Separar responsabilidades (arquitectura limpia)  
 
-❌ No ignorar reglas del broker
+> Muchos bots fallan por **no respetar MT5**.  
+> **Trading Phantom existe para no cometer esos errores.**
 
-❌ No “parchear” errores sin entenderlos
+---
 
-✅ Validar todo antes de enviar una orden
+## 🧱 Arquitectura del Sistema
 
-✅ Fallar de forma controlada y explicable
-
-✅ Separar responsabilidades (arquitectura limpia)
-
-Muchos bots fallan por no respetar MT5.
-Trading Phantom existe para no cometer esos errores.
-
-🧱 Arquitectura del Sistema
+```text
 trading_phantom/
 │
 ├── main.py              # Orquestador principal
@@ -50,153 +52,95 @@ trading_phantom/
 │
 ├── debug_symbol.py      # Diagnóstico de símbolos MT5
 └── README.md            # Documentación
+````
 
-🔧 Componentes y Justificación Técnica
-1️⃣ MT5Connector
+---
 
-📄 mt5_connector.py
+## 🔧 Componentes y Justificación Técnica
 
-Responsable de toda la comunicación con MetaTrader 5.
+### 1️⃣ MT5Connector
 
-Funciones clave:
+📄 `mt5_connector.py`
 
-Inicializar conexión con MT5
+Responsable de **toda la comunicación con MetaTrader 5**.
 
-Resolver símbolos con sufijos (EURUSD → EURUSD-T)
+**Funciones clave**
 
-Obtener precios y ticks
+* Inicializar conexión con MT5
+* Resolver símbolos con sufijos (`EURUSD` → `EURUSD-T`)
+* Obtener precios y ticks
+* Enviar órdenes (**pending**)
+* Cerrar posiciones
+* Consultar posiciones abiertas
 
-Enviar órdenes (pending)
+**Decisiones importantes**
 
-Cerrar posiciones
+* ❗ Uso de **PENDING ORDERS** en lugar de MARKET
+* ❗ Uso de `ORDER_FILLING_RETURN`
+* ❗ Normalización estricta del símbolo
+* ❗ Cumplimiento de `trade_stops_level`
 
-Consultar posiciones abiertas
+---
 
-Decisiones importantes:
+### 2️⃣ Strategy
 
-❗ Se usan PENDING ORDERS en lugar de MARKET
-👉 Muchos brokers (como Admirals) bloquean órdenes market vía API
+📄 `strategy.py`
 
-❗ Se respeta ORDER_FILLING_RETURN
+Encapsula la **lógica de generación de señales**.
 
-❗ Se evita enviar price en órdenes market
+* Usa datos históricos desde MT5
+* Puede usar indicadores técnicos (SMA, RSI, etc.)
+* Devuelve señales: `BUY`, `SELL`, `HOLD`
 
-❗ Se normaliza el símbolo antes de operar
+---
 
-2️⃣ Strategy
+### 3️⃣ RiskManager
 
-📄 strategy.py
+📄 `risk_manager.py`
 
-Encapsula la lógica de generación de señales.
+🧠 **El corazón del sistema**.
 
-Actualmente:
+**Validaciones**
 
-Usa datos históricos de MT5
+* Máximo número de posiciones
+* Riesgo por trade
+* Lotes válidos según broker
+* Hard cap de seguridad
+* Stop Level
+* Pérdida diaria máxima
+* SL / TP siempre válidos
 
-Puede basarse en indicadores técnicos (SMA, RSI, etc.)
+---
 
-Devuelve señales simples: BUY, SELL, HOLD
+### 4️⃣ Trader
 
-Justificación:
+📄 `trader.py`
 
-Separar la estrategia del trading permite:
+Ejecuta órdenes **solo si**:
 
-Cambiar la lógica sin tocar el resto del sistema
+* La señal es válida
+* El riesgo es aprobado
+* El mercado está abierto
 
-Usar múltiples estrategias
+---
 
-Integrar ML / RL en el futuro
+### 5️⃣ main.py
 
-3️⃣ RiskManager
+📄 `main.py`
 
-📄 risk_manager.py
+**Flujo principal**
 
-El corazón del sistema.
+1. Cargar configuración
+2. Conectar a MT5
+3. Inicializar módulos
+4. Loop de ejecución
+5. Manejo de errores y cierre limpio
 
-Ninguna operación se ejecuta sin pasar por aquí.
+---
 
-Validaciones implementadas:
+## ⚙️ Configuración (`config.yaml`)
 
-Máximo número de posiciones abiertas
-
-Riesgo por trade (% del balance)
-
-Lote mínimo, máximo y step del broker
-
-Hard cap de seguridad por usuario
-
-Stop Level (trade_stops_level)
-
-Pérdida diaria máxima
-
-Señales HOLD bloqueadas
-
-SL / TP siempre válidos
-
-Justificación:
-
-La mayoría de bots pierden dinero por no tener risk management real.
-
-Este módulo evita:
-
-Lotes inválidos (error 10027)
-
-SL/TP demasiado cercanos
-
-Operar fuera de reglas del broker
-
-Overtrading
-
-4️⃣ Trader
-
-📄 trader.py
-
-Ejecuta la orden solo si:
-
-La estrategia da señal válida
-
-El RiskManager la aprueba
-
-El mercado está abierto
-
-Este módulo:
-
-Traduce la intención (BUY / SELL) en órdenes MT5
-
-Centraliza la ejecución
-
-Maneja el resultado de order_send
-
-5️⃣ main.py
-
-📄 main.py
-
-Es el orquestador del sistema.
-
-Flujo principal:
-
-Cargar configuración
-
-Conectar a MT5
-
-Inicializar Strategy, RiskManager y Trader
-
-Loop de ejecución:
-
-Obtener precio
-
-Generar señal
-
-Validar riesgo
-
-Ejecutar orden
-
-Manejar errores y cierre limpio
-
-⚙️ Configuración (config.yaml)
-
-Ejemplo:
-
+```yaml
 mode: demo
 log_level: INFO
 
@@ -216,107 +160,71 @@ orders:
 
 execution:
   loop_interval_seconds: 60
+```
 
-Justificación:
+---
 
-Toda la lógica crítica es configurable
+## 🧪 Errores Reales de MT5
 
-No hay valores “hardcodeados” peligrosos
+### ❌ Error 10027
 
-Facilita backtesting y optimización
+* Volumen inválido
+* SL / TP incorrectos
+* Restricciones del broker
 
-🧪 Errores Reales de MT5 y Lecciones Aprendidas
+### ❌ Error 10018
 
-Durante el desarrollo se enfrentaron errores reales, comunes en trading algorítmico:
+* Mercado cerrado
+* Horarios Forex
 
-❌ Error 10027
+---
 
-Volumen inválido
+## 🔐 Seguridad y Buenas Prácticas
 
-SL/TP demasiado cerca
+* ❌ No operar sin SL
+* ❌ No forzar lotes
+* ✅ Consultar siempre `symbol_info`
+* ✅ Separar decisión y ejecución
 
-Market orders bloqueadas por broker
+---
 
-Pending orders mal posicionadas
+## 🚀 Roadmap
 
-➡️ Solución:
+* 📊 Logging profesional
+* 📈 Backtesting
+* 🧠 Machine Learning
+* 🌐 Dashboard
+* 💼 Cuenta real
 
-Normalización estricta
+---
 
-Uso de trade_stops_level
+## ⚠️ Advertencia
 
-Pending orders seguras
+Proyecto **educativo y experimental**.
+Usar **SIEMPRE en demo** antes de real.
 
-❌ Error 10018
+---
 
-Mercado cerrado
+## 🧑‍💻 Autor
 
-Horarios Forex
+Desarrollado con enfoque profesional y experiencia real en MT5.
 
-Roll-over / fin de semana
+---
 
-➡️ Solución:
+## ⭐ Contribuciones
 
-Validar trade_mode
+* Estrategias
+* Tests
+* Optimización
+* Documentación
 
-No operar fuera de mercado
+---
 
-🔐 Seguridad y Buenas Prácticas
+## ✅ Estado del Proyecto
 
-❌ Nunca operar sin SL
+* 🟢 Funcional en demo
+* 🟡 En expansión
+* 🔵 Arquitectura estable
 
-❌ Nunca forzar lotes
-
-❌ Nunca asumir reglas del broker
-
-✅ Siempre consultar symbol_info
-
-✅ Manejar errores explícitamente
-
-✅ Separar lógica de ejecución y decisión
-
-🚀 Roadmap Futuro
-
-📊 Logging profesional (CSV / DB)
-
-📈 Backtesting histórico
-
-🧠 Machine Learning / Reinforcement Learning
-
-🌐 Dashboard web
-
-🧪 Optimización de parámetros
-
-💼 Preparación para cuenta real
-
-⚠️ Advertencia
-
-Este proyecto es educativo y experimental.
-
-No se garantiza rentabilidad
-
-El trading conlleva riesgo
-
-Usar SIEMPRE en demo antes de real
-
-🧑‍💻 Autor
-
-Proyecto desarrollado con enfoque profesional, basado en experiencia real con MetaTrader 5, evitando atajos y soluciones frágiles.
-
-⭐ Contribuciones
-
-Si quieres contribuir:
-
-Mejora estrategias
-
-Añade tests
-
-Optimiza el risk manager
-
-Documenta más casos reales de MT5
-
-✅ Estado del Proyecto
-
-🟢 Funcional en demo
-🟡 En proceso de expansión
-🔵 Arquitectura estable
+```
+```
