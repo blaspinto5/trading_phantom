@@ -1,14 +1,15 @@
 import MetaTrader5 as mt5
 from datetime import date
+from typing import Any, Optional, Tuple
 
 
 class RiskManager:
-    def __init__(self, config: dict, mt5_connector):
-        self.config = config
-        self.mt5 = mt5_connector
-        self.daily_loss = 0.0
-        self.last_reset = date.today()
-
+    """Comprueba si un trade puede ejecutarse y calcula lotajes y SL/TP seguros."""
+    def __init__(self, config: dict, mt5_connector: Any) -> None:
+        self.config: dict = config
+        self.mt5: Any = mt5_connector
+        self.daily_loss: float = 0.0
+        self.last_reset: date = date.today()
     # =========================
     # RESET DIARIO
     # =========================

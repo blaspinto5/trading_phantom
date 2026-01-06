@@ -226,5 +226,53 @@ Desarrollado con enfoque profesional y experiencia real en MT5.
 * 🟡 En expansión
 * 🔵 Arquitectura estable
 
+---
+
+## 🧪 Tests & Calidad
+
+- Ejecutar tests: `python -m pytest -q`
+- Las pruebas están en `trading_phantom/tests/`
+- Añade más pruebas para mejorar cobertura y seguridad del bot.
+
+---
+
+## ▶️ Ejecutar Backtest + Visual
+
+Puedes ejecutar el backtest numérico y generar el plot interactivo (usando los mismos módulos/estrategia) de dos formas:
+
+1) Desde la raíz del proyecto (recomendado):
+
+```bash
+python -m trading_phantom.backtest.run_and_visual
+python -m trading_phantom.backtest.run_backtest
+python -m trading_phantom.backtest.visual_backtest
 ```
+
+2) Desde dentro de la carpeta `trading_phantom` (alternativa):
+
+```bash
+cd trading_phantom
+python -m backtest.run_and_visual
+```
+
+Opciones claves:
+- `symbol`, `timeframe`, `bars`, `sma_period`, `rsi_period`
+- Ejecutar el orquestador por un número limitado de iteraciones: `python -m trading_phantom.main --iterations 5` o `--once` para una iteración.
+- En entornos sin GUI (CI/tests) llama a `run_visual_backtest(df, plot=False)` para evitar abrir una ventana.
+
+---
+
+## ✅ Integración Continua (CI)
+
+He añadido un Workflow de GitHub Actions para ejecutar linter (ruff) y pruebas (pytest) en cada push/PR sobre `main`/`master`.
+El workflow se ejecuta en `windows-latest` para garantizar compatibilidad con el paquete `MetaTrader5`.
+
+- Archivos añadidos:
+  - `.github/workflows/ci.yml`
+  - `requirements.txt` (dependencias runtime)
+  - `requirements-dev.txt` (pytest, ruff)
+  - `pyproject.toml` (config ruff)
+
+---
+
 ```

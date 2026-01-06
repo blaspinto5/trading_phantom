@@ -1,117 +1,29 @@
-import time
-import yaml
-from datetime import datetime
+# main.py
 
-import MetaTrader5 as mt5
+import sys
+from pathlib import Path
+import logging
 
-from mt5_connector import MT5Connector
-from strategy import Strategy
-from risk_manager import RiskManager
-from trader import Trader
+# Allow running as script (python trading_phantom/main.py) or as module (python -m trading_phantom.main)
+if __package__ is None:
+    # Add project root (parent of this package) to sys.path so `trading_phantom` imports work when running as a script
+    sys.path.append(str(Path(__file__).resolve().parent.parent))
 
+from trading_phantom.core.orchestrator import run_bot
 
-# =========================
-# CARGA DE CONFIGURACIÓN
-# =========================
-def load_config(path: str = "config.yaml") -> dict:
-    with open(path, "r") as f:
-        return yaml.safe_load(f)
-
-
-# =========================
-# MAIN
-# =========================
-def main():
-    print("🚀 Iniciando Trading Phantom")
-
-    # 1️⃣ Cargar configuración
-    config = load_config()
-
-    symbol = config["symbol"]
-    timeframe_str = config["timeframe"]
-    loop_interval = config["execution"]["loop_interval_seconds"]
-
-    print(f"📊 Símbolo: {symbol}")
-    print(f"🕒 Timeframe: {timeframe_str}")
-    print(f"⏱️ Intervalo loop: {loop_interval} segundos")
-    print(f"🧪 Modo: {config['mode']}")
-
-    # 2️⃣ Inicializar MT5
-    mt5_conn = MT5Connector()
-    if not mt5_conn.connect():
-        print("❌ No se pudo conectar a MT5. Abortando.")
-        return
-
-    # 3️⃣ Mapear timeframe del config a MT5
-    timeframe_map = {
-        "M1": mt5.TIMEFRAME_M1,
-        "M5": mt5.TIMEFRAME_M5,
-        "M15": mt5.TIMEFRAME_M15,
-        "H1": mt5.TIMEFRAME_H1,
-        "H4": mt5.TIMEFRAME_H4,
-        "D1": mt5.TIMEFRAME_D1,
-    }
-
-    timeframe = timeframe_map.get(timeframe_str)
-    if timeframe is None:
-        print(f"❌ Timeframe inválido en config.yaml: {timeframe_str}")
-        mt5_conn.shutdown()
-        return
-
-    # 4️⃣ Inicializar módulos
-    strategy = Strategy(
-        symbol=symbol,
-        timeframe=timeframe,
-        mt5_connector=mt5_conn
-    )
-
-    risk_manager = RiskManager(config, mt5_conn)
-    trader = Trader(mt5_conn, risk_manager)
-
-    print("✅ Estrategia, RiskManager y Trader inicializados")
-
-    try:
-        # 5️⃣ Loop principal
-        while True:
-            print("\n-----------------------------")
-            print(f"🕒 Tick: {datetime.now()}")
-
-            # Precio actual
-            price = mt5_conn.get_price(symbol)
-            if price is None:
-                print("⚠️ No se pudo obtener precio")
-                time.sleep(loop_interval)
-                continue
-
-            print(
-                f"💱 {price['symbol']} | "
-                f"BID: {price['bid']} | "
-                f"ASK: {price['ask']}"
-            )
-
-            # Señal de la estrategia
-            signal = strategy.generate_signal()
-            print(f"📈 Señal: {signal}")
-
-            # 👉 EJECUCIÓN REAL (DEMO)
-            if signal != "HOLD":
-                trader.execute(signal, price)
-
-            time.sleep(loop_interval)
-
-    except KeyboardInterrupt:
-        print("\n🛑 Detenido manualmente por el usuario")
-
-    except Exception as e:
-        print(f"❌ Error crítico: {e}")
-
-    finally:
-        mt5_conn.shutdown()
-        print("✅ Trading Phantom finalizado correctamente")
-
-
-# =========================
-# ENTRY POINT
-# =========================
 if __name__ == "__main__":
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run Trading Phantom bot")
+    parser.add_argument("--iterations", "-n", type=int, default=None,
+                        help="Run only N loop iterations (for testing). If omitted, runs indefinitely.")
+    parser.add_argument("--once", action="store_true", help="Run only one iteration and exit (shortcut for --iterations 1)")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+
+    args = parser.parse_args()
+
+    level = logging.DEBUG if args.debug else logging.INFO
+    logging.basicConfig(level=level)
+
+    iters = 1 if args.once else args.iterations
+    run_bot(iterations=iters)

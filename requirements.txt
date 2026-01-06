@@ -1,0 +1,6 @@
+pandas
+numpy
+matplotlib
+backtesting
+# MetaTrader5 is platform-specific (Windows). Keep it optional in CI if runner is Windows.
+MetaTrader5
