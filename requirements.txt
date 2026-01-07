@@ -1,0 +1,13 @@
+pandas
+numpy
+matplotlib
+backtesting
+# MetaTrader5 is platform-specific (Windows). Keep it optional in CI if runner is Windows.
+MetaTrader5
+
+# Desktop app dependencies
+Flask>=2.0
+pywebview>=3.6
+
+# Build tools (optional on dev machine)
+pyinstaller>=5.0

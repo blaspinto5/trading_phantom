@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trading Phantom - Desktop</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    button { margin-right: 8px; }
+    pre { background: #f7f7f7; padding: 10px; border-radius: 4px; max-height: 300px; overflow: auto; }
+    .section { margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Trading Phantom - App</h1>
+  <div class="section">
+    <h2>Bot</h2>
+    <label>Iterations: <input id="iterations" type="number" placeholder="(leave empty for continuous)"></label>
+    <label>Debug: <input id="debug" type="checkbox"></label>
+    <button id="btn-start">Start Bot (one-click)</button>
+    <button id="btn-stop">Stop Bot</button>
+    <span id="bot-status">Status: unknown</span>
+  </div>
+
+  <div class="section">
+    <h2>Bot Logs</h2>
+    <label><input id="auto_logs" type="checkbox" checked> Auto-refresh logs while running</label>
+    <button id="btn-refresh-botlogs">Refresh Bot Logs</button>
+    <pre id="bot-logs">No bot logs loaded yet.</pre>
+  </div>
+
+  <div class="section">
+    <h2>Backtest</h2>
+    <label>Symbol: <input id="symbol" value="EURUSD-T"></label>
+    <label>Bars: <input id="bars" type="number" value="500"></label>
+    <button id="btn-backtest">Run Backtest</button>
+    <div id="backtest-result"></div>
+  </div>
+
+  <div class="section">
+    <h2>Logs</h2>
+    <button id="btn-logs">Refresh Logs</button>
+    <pre id="logs">No logs loaded yet.</pre>
+  </div>
+
+  <script>
+    async function jsonReq(url, opts) {
+      const r = await fetch(url, opts);
+      return r.json();
+    }
+
+    async function updateStatus(){
+      const s = await jsonReq('/api/bot/status');
+      document.getElementById('bot-status').innerText = s.running ? `Running (pid ${s.pid})` : 'Stopped';
+    }
+
+    document.getElementById('btn-start').addEventListener('click', async ()=>{
+      const iterationsVal = document.getElementById('iterations').value;
+      const debug = document.getElementById('debug').checked;
+      const body = {};
+      if (iterationsVal) body.iterations = parseInt(iterationsVal, 10);
+      if (debug) body.debug = true;
+      await jsonReq('/api/bot/start', {method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)});
+      updateStatus();
+    });
+
+    document.getElementById('btn-stop').addEventListener('click', async ()=>{
+      await jsonReq('/api/bot/stop', {method: 'POST'});
+      updateStatus();
+    });
+
+    document.getElementById('btn-backtest').addEventListener('click', async ()=>{
+      const symbol = document.getElementById('symbol').value;
+      const bars = parseInt(document.getElementById('bars').value, 10);
+      const r = await jsonReq('/api/backtest', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({symbol, bars})});
+      document.getElementById('backtest-result').innerText = `Job started: ${r.job_id}`;
+      // Poll for result
+      const jobId = r.job_id;
+      const poll = setInterval(async ()=>{
+        const status = await jsonReq(`/api/backtest/${jobId}`);
+        if(status.status === 'done' || status.status === 'error'){
+          clearInterval(poll);
+          document.getElementById('backtest-result').innerText = JSON.stringify(status.result, null, 2);
+        }
+      }, 2000);
+    });
+
+    document.getElementById('btn-logs').addEventListener('click', async ()=>{
+      const out = await jsonReq('/api/logs');
+      document.getElementById('logs').innerText = out.logs || '(no logs)';
+    });
+
+    document.getElementById('btn-refresh-botlogs').addEventListener('click', async ()=>{
+      const out = await jsonReq('/api/logs?bot=true&lines=200');
+      document.getElementById('bot-logs').innerText = out.logs || '(no logs)';
+    });
+
+    // Bot logs polling
+    let botLogsInterval = null;
+    function startBotLogsPolling(){
+      if (botLogsInterval) return;
+      botLogsInterval = setInterval(async ()=>{
+        const auto = document.getElementById('auto_logs').checked;
+        if (!auto) return;
+        const out = await jsonReq('/api/logs?bot=true&lines=200');
+        document.getElementById('bot-logs').innerText = out.logs || '(no logs)';
+      }, 1000);
+    }
+    function stopBotLogsPolling(){
+      if (!botLogsInterval) return;
+      clearInterval(botLogsInterval);
+      botLogsInterval = null;
+    }
+
+    async function updateStatus(){
+      const s = await jsonReq('/api/bot/status');
+      if (s.running){
+        document.getElementById('bot-status').innerText = `Running (pid ${s.pid})`;
+        startBotLogsPolling();
+      } else {
+        document.getElementById('bot-status').innerText = 'Stopped';
+        stopBotLogsPolling();
+      }
+    }
+
+    // Initial status
+    updateStatus();
+  </script>
+</body>
+</html>
