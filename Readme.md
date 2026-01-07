@@ -356,11 +356,69 @@ ruff check --fix .
 
 ---
 
+## 📈 Analítica y ML
+
+La plataforma integra un módulo de analítica y Machine Learning que captura datos de trades y resultados de backtests, los almacena en una base de datos y entrena un modelo que sugiere señales de compra/venta. Este módulo es opcional y está desacoplado del bot; se opera vía API.
+
+### Componentes clave
+- [src/trading_phantom/analytics/db.py](src/trading_phantom/analytics/db.py): Modelos SQLAlchemy (`Trade`, `BacktestRun`) y gestión de sesión. Por defecto usa SQLite; en Docker usa Postgres vía `DATABASE_URL`.
+- [src/trading_phantom/analytics/collector.py](src/trading_phantom/analytics/collector.py): Funciones de ingesta (`ingest_trade`, `ingest_backtest`) que validan y persisten payloads.
+- [src/trading_phantom/analytics/ml_pipeline.py](src/trading_phantom/analytics/ml_pipeline.py): `StrategyModel` con `train()` y `predict()` utilizando `RandomForestClassifier` y features básicos (SMA, RSI, variaciones de precio).
+
+### Flujo de datos
+
+Bot/Backtest → eventos JSON → API `/api/analytics/*` → Collector (normaliza) → DB (SQLAlchemy) → ML Train (`/api/analytics/ml/train`) → ML Predict (`/api/analytics/ml/predict`) → (opcional) combinación con reglas de `Strategy`.
+
+### Endpoints de Analítica
+- `POST /api/analytics/ingest_trade`: ingesta de una operación (campos: `symbol`, `side`, `entry_price`, `exit_price`, `pnl`, `opened_at`, `closed_at`).
+- `POST /api/analytics/ml/train`: entrena el modelo con datos del DB.
+- `POST /api/analytics/ml/predict`: predice señal (`BUY`/`SELL`/`HOLD`) con probabilidad dado un set de features.
+- `GET /api/analytics/export/trades`: exporta dataset de trades en JSON.
+- `GET /api/analytics/export/backtests`: exporta dataset de backtests en JSON.
+
+### Variables de entorno de módulos
+- `ENABLE_BACKTEST`, `ENABLE_BOT`, `ENABLE_LOGS`, `ENABLE_ANALYTICS`: controlan el registro de Blueprints en [src/trading_phantom/webapp.py](src/trading_phantom/webapp.py) y [src/trading_phantom/api/__init__.py](src/trading_phantom/api/__init__.py).
+
+### Ejemplos rápidos (PowerShell)
+
+Entrenar:
+```powershell
+Invoke-RestMethod -Uri "http://127.0.0.1:5000/api/analytics/ml/train" -Method Post
+```
+
+Predecir:
+```powershell
+$features = @{ close = 1.1234; sma = 1.1200; rsi = 55; prev_close = 1.1210 }
+Invoke-RestMethod -Uri "http://127.0.0.1:5000/api/analytics/ml/predict" -Method Post -Body ($features | ConvertTo-Json) -ContentType 'application/json'
+```
+
+Ingestar trade:
+```powershell
+$trade = @{ symbol = "EURUSD-T"; side = "BUY"; entry_price = 1.1205; exit_price = 1.1235; pnl = 30.0; opened_at = "2025-12-01T10:00:00Z"; closed_at = "2025-12-01T12:00:00Z" }
+Invoke-RestMethod -Uri "http://127.0.0.1:5000/api/analytics/ingest_trade" -Method Post -Body ($trade | ConvertTo-Json) -ContentType 'application/json'
+```
+
+## 🐳 Docker
+
+`docker-compose.yml` define:
+- `app`: API Flask (bot/backtest/analytics) con healthcheck.
+- `db`: Postgres 15 con volumen persistente `pgdata`.
+
+Configurar base de datos:
+- `DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/trading_phantom`
+- Alternativa local (por defecto): SQLite (`analytics.db`).
+
+Arranque rápido:
+```powershell
+docker compose up -d --build
+docker compose ps
+```
+
 ## 📄 Licencia
 
 Este proyecto está bajo la licencia MIT. Ver [LICENSE](LICENSE) para más detalles.
 
 ---
 
-**Última actualización**: 2024
+**Última actualización**: 2026
 **Status**: En desarrollo activo ✨

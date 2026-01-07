@@ -181,6 +181,79 @@ Invoke-RestMethod -Uri "http://127.0.0.1:5000/api/logs?lines=50"
 
 ---
 
+### POST /api/analytics/ingest_trade
+
+Persiste un trade/operación en la base de datos.
+
+**Request Body:**
+```json
+{
+  "symbol": "EURUSD-T",
+  "side": "BUY",
+  "entry_price": 1.1205,
+  "exit_price": 1.1235,
+  "pnl": 30.0,
+  "opened_at": "2025-12-01T10:00:00Z",
+  "closed_at": "2025-12-01T12:00:00Z"
+}
+```
+
+**Response (200 OK):**
+```json
+{ "status": "ok" }
+```
+
+---
+
+### POST /api/analytics/ml/train
+
+Entrena el modelo ML (RandomForest) usando el dataset persistido.
+
+**Request Body:** Vacío
+
+**Response (200 OK):**
+```json
+{ "status": "trained", "n_samples": 1234 }
+```
+
+---
+
+### POST /api/analytics/ml/predict
+
+Predice la señal (`BUY`/`SELL`/`HOLD`) a partir de features actuales.
+
+**Request Body:**
+```json
+{ "close": 1.1234, "sma": 1.1200, "rsi": 55, "prev_close": 1.1210 }
+```
+
+**Response (200 OK):**
+```json
+{ "signal": "BUY", "prob": 0.72 }
+```
+
+---
+
+### GET /api/analytics/export/trades
+
+Exporta el dataset de trades en JSON.
+
+**Response (200 OK):**
+```json
+{ "trades": [ { "symbol": "EURUSD-T", "side": "BUY", "pnl": 30.0, ... } ] }
+```
+
+---
+
+### GET /api/analytics/export/backtests
+
+Exporta el dataset de backtests en JSON.
+
+**Response (200 OK):**
+```json
+{ "backtests": [ { "symbol": "EURUSD-T", "winrate": 60.0, ... } ] }
+```
+
 ### POST /api/backtest
 
 Lanza un backtest en background.
@@ -429,6 +502,8 @@ while ($maxWait -lt 60) {
 - Los logs se guardan en `logs/bot.log` (relativo a la raíz del proyecto)
 - Los backtests en error retienen información en `result.error`
 - Los jobs de backtest se almacenan en memoria; no persisten entre reinicios de la app
+- Si `DATABASE_URL` está configurado, la analítica usa Postgres; de lo contrario, SQLite local.
+- Los endpoints de analítica requieren `ENABLE_ANALYTICS=1`.
 
 ---
 

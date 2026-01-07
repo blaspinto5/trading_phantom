@@ -116,6 +116,23 @@ initialize() → symbol_select() → symbol_info_tick() / copy_rates_from_pos()
 - `GET /api/backtest/<job_id>`: Status/resultado
 - `GET /api/logs`: Lee logs del archivo
 
+### 7. Analítica y ML
+
+**`analytics/db.py`**: Modelos y sesión de base de datos
+- `Trade`: operación ejecutada (symbol, side, entry/exit, pnl, timestamps)
+- `BacktestRun`: resumen de métricas por ejecución de backtest
+- Base por defecto: SQLite (`analytics.db`); en Docker: Postgres vía `DATABASE_URL`
+
+**`analytics/collector.py`**: Ingesta y normalización
+- `ingest_trade(payload)`: valida y guarda `Trade`
+- `ingest_backtest(payload)`: guarda `BacktestRun` desde resultados del backtest
+
+**`analytics/ml_pipeline.py`**: Entrenamiento y predicción
+- `StrategyModel.train(session)`: carga dataset desde DB, deriva features (SMA, RSI, deltas), entrena `RandomForestClassifier`
+- `StrategyModel.predict(features)`: retorna `BUY`/`SELL`/`HOLD` + probabilidad
+
+Blueprints (Flask): `/api/analytics/*` registradas condicionalmente por `ENABLE_ANALYTICS`.
+
 ## Flujo de datos
 
 ### Flujo de trading en vivo
@@ -151,6 +168,22 @@ trades = [{"type": "BUY", "pnl": X}, ...]
 metrics = calculate_metrics(trades)
     ↓
 output: {"metrics": {...}, "visual_results": {...}}
+
+### Flujo de analítica/ML
+
+```
+Evento de trade / resultado de backtest
+    ↓
+API `/api/analytics/ingest_trade` o persistencia automática desde backtest
+    ↓
+DB (SQLAlchemy)
+    ↓
+Entrenamiento `/api/analytics/ml/train`
+    ↓
+Predicción `/api/analytics/ml/predict` → { signal, probability }
+    ↓
+Uso opcional en `Strategy`: combinar señal ML con reglas (p. ej. exigir consenso con RSI)
+```
 ```
 
 ## Patrones de diseño
