@@ -21,14 +21,50 @@ except Exception:
 register_blueprints(app)
 
 
-@app.route('/')
 def index():
     return render_template('index.html')
+
+# Idempotent route registration to avoid pytest double-import collisions
+if 'home' not in app.view_functions:
+    app.add_url_rule('/', endpoint='home', view_func=index)
 
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@app.route('/info/ml')
+def info_ml():
+    return render_template('ml_info.html')
+
+
+@app.route('/api/shutdown', methods=['POST'])
+def shutdown():
+    """Cierra la BD y detiene el servidor Flask."""
+    def _do_shutdown():
+        import time
+        import threading
+        time.sleep(0.5)  # Dar tiempo a responder
+        
+        # Cerrar BD si existe
+        try:
+            from trading_phantom.analytics.db import get_db_session, engine
+            session = get_db_session()
+            if session:
+                session.close()
+            if engine:
+                engine.dispose()
+        except Exception as e:
+            logger.exception('Error closing database')
+        
+        # Terminar Flask
+        import os
+        os._exit(0)
+    
+    t = threading.Thread(target=_do_shutdown, daemon=True)
+    t.start()
+    return jsonify({'status': 'shutting_down'})
 
 
 @app.route('/api/ingest/trade', methods=['POST'])

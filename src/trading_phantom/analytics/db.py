@@ -12,10 +12,15 @@ class Trade(Base):
     __tablename__ = 'trades'
     id = Column(Integer, primary_key=True, autoincrement=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
+    ticket = Column(Integer, index=True, nullable=True)
     symbol = Column(String(50))
     side = Column(String(10))  # BUY/SELL
     price = Column(Float)
     volume = Column(Float)
+    sl = Column(Float, nullable=True)
+    tp = Column(Float, nullable=True)
+    exit_price = Column(Float, nullable=True)
+    exit_time = Column(DateTime, nullable=True)
     pnl = Column(Float, nullable=True)
     meta = Column(JSON, nullable=True)
 

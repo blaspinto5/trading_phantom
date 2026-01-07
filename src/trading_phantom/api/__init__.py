@@ -11,6 +11,7 @@ def register_blueprints(app):
     from . import bot as bp_bot
     from . import logs as bp_logs
     from . import analytics as bp_analytics
+    from . import knowledge as bp_knowledge
 
     if _enabled('ENABLE_BACKTEST'):
         app.register_blueprint(bp_backtest.bp, url_prefix='/api')
@@ -20,3 +21,5 @@ def register_blueprints(app):
         app.register_blueprint(bp_logs.bp, url_prefix='/api')
     if _enabled('ENABLE_ANALYTICS'):
         app.register_blueprint(bp_analytics.bp, url_prefix='/api')
+    if _enabled('ENABLE_KNOWLEDGE'):
+        app.register_blueprint(bp_knowledge.bp, url_prefix='/api')

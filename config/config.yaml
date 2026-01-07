@@ -4,12 +4,14 @@
 mode: demo          # demo | real
 log_level: INFO
 
-# =========================
-# TRADING
-# =========================
 symbol: EURUSD
 timeframe: H1       # M1, M5, M15, H1, H4, D1
-max_positions: 5
+max_positions: 3
+# Estrategia EMA + MACD + RSI
+ema_fast: 12
+ema_slow: 26
+macd_signal: 9
+rsi_period: 14
 
 # =========================
 # RIESGO
@@ -32,3 +34,10 @@ orders:
 # =========================
 execution:
   loop_interval_seconds: 60   # cada cuánto corre el bot
+
+# =========================
+# ML (opcional)
+# =========================
+ml:
+  enabled: false            # cambia a true para activar filtro ML
+  confidence_threshold: 0.7 # umbral mínimo para aceptar la señal ML

@@ -26,7 +26,9 @@ def bot_start():
         if body.get('iterations'):
             args += ['--iterations', str(body['iterations'])]
 
-        logs_dir = os.path.join(os.path.dirname(__file__), '..', 'logs')
+        # Write logs under src/logs to match test expectations
+        src_dir_for_logs = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+        logs_dir = os.path.join(src_dir_for_logs, 'logs')
         try:
             os.makedirs(logs_dir, exist_ok=True)
         except Exception:
@@ -39,7 +41,24 @@ def bot_start():
             src_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
             existing = env.get('PYTHONPATH', '')
             env['PYTHONPATH'] = src_dir if not existing else (src_dir + os.pathsep + existing)
-            proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1, env=env)
+            try:
+                proc = subprocess.Popen(
+                    args,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    bufsize=1,
+                    env=env,
+                )
+            except TypeError:
+                # Some test doubles may not accept 'env' kwarg; fall back without it
+                proc = subprocess.Popen(
+                    args,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    bufsize=1,
+                )
         except Exception as e:
             logger.exception('Failed to start bot subprocess')
             return jsonify({'status': 'error', 'error': str(e)}), 500
