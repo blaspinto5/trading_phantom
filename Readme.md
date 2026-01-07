@@ -267,6 +267,13 @@ Para detalles técnicos completos, ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.
 | `/api/logs` | GET | Obtener logs (bot, backtest, histórico) |
 | `/api/backtest` | POST | Ejecutar backtest con parámetros |
 | `/api/backtest` | GET | Obtener resultados backtest previos |
+| `/api/analytics/ingest_trade` | POST | Ingesta de operación al DB |
+| `/api/analytics/ml/train` | POST | Entrenamiento del modelo ML |
+| `/api/analytics/ml/predict` | POST | Predicción de señal con features |
+| `/api/analytics/export/trades` | GET | Exportar dataset de trades (`?format=json|csv|parquet`) |
+| `/api/analytics/export/backtests` | GET | Exportar dataset de backtests (`?format=json|csv|parquet`) |
+
+Nota: `parquet` requiere `pyarrow`.
 
 **Documentación completa con ejemplos:** [docs/API.md](docs/API.md)
 

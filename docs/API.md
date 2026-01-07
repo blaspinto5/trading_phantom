@@ -236,23 +236,37 @@ Predice la señal (`BUY`/`SELL`/`HOLD`) a partir de features actuales.
 
 ### GET /api/analytics/export/trades
 
-Exporta el dataset de trades en JSON.
+Exporta el dataset de trades.
 
-**Response (200 OK):**
+**Query Parameters:**
+- `format`: `json` (default), `csv`, `parquet` (requiere `pyarrow`).
+
+**Response (200 OK, json):**
 ```json
-{ "trades": [ { "symbol": "EURUSD-T", "side": "BUY", "pnl": 30.0, ... } ] }
+{ "format": "json", "data": [ { "symbol": "EURUSD-T", "side": "BUY", "pnl": 30.0, ... } ] }
 ```
+
+**Response (200 OK, csv):** Content-Type `text/csv`, attachment `trades.csv`.
+
+**Response (200 OK, parquet):** Content-Type `application/octet-stream`, attachment `trades.parquet`.
 
 ---
 
 ### GET /api/analytics/export/backtests
 
-Exporta el dataset de backtests en JSON.
+Exporta el dataset de backtests.
 
-**Response (200 OK):**
+**Query Parameters:**
+- `format`: `json` (default), `csv`, `parquet` (requiere `pyarrow`).
+
+**Response (200 OK, json):**
 ```json
-{ "backtests": [ { "symbol": "EURUSD-T", "winrate": 60.0, ... } ] }
+{ "format": "json", "data": [ { "symbol": "EURUSD-T", "winrate": 60.0, ... } ] }
 ```
+
+**Response (200 OK, csv):** Content-Type `text/csv`, attachment `backtests.csv`.
+
+**Response (200 OK, parquet):** Content-Type `application/octet-stream`, attachment `backtests.parquet`.
 
 ### POST /api/backtest
 

@@ -1,5 +1,7 @@
 import logging
-from flask import Blueprint, jsonify, request
+import io
+from flask import Blueprint, jsonify, request, Response
+import pandas as pd
 from trading_phantom.analytics.collector import ingest_trade
 from trading_phantom.analytics.ml_pipeline import StrategyModel
 from trading_phantom.analytics.db import get_session, Trade, BacktestRun
@@ -41,6 +43,26 @@ def api_ml_predict():
         return jsonify({'status': 'error', 'error': str(e)}), 500
 
 
+def _export_response(data: list, fmt: str, filename: str) -> Response:
+    if fmt == 'json':
+        return jsonify({'format': fmt, 'data': data})
+    df = pd.DataFrame(data)
+    if fmt == 'csv':
+        csv_buf = io.StringIO()
+        df.to_csv(csv_buf, index=False)
+        return Response(csv_buf.getvalue(), mimetype='text/csv', headers={'Content-Disposition': f'attachment; filename="{filename}.csv"'})
+    if fmt == 'parquet':
+        try:
+            import pyarrow  # noqa: F401
+            import pyarrow.parquet as pq  # noqa: F401
+        except Exception:
+            return jsonify({'error': 'pyarrow not installed. Install pyarrow to enable Parquet export.'}), 400
+        buf = io.BytesIO()
+        df.to_parquet(buf, index=False)
+        return Response(buf.getvalue(), mimetype='application/octet-stream', headers={'Content-Disposition': f'attachment; filename="{filename}.parquet"'})
+    return jsonify({'error': f'Unsupported format: {fmt}'}), 400
+
+
 @bp.route('/analytics/export/trades', methods=['GET'])
 def export_trades():
     fmt = (request.args.get('format') or 'json').lower()
@@ -60,7 +82,7 @@ def export_trades():
         }
         for r in rows
     ]
-    return jsonify({'format': fmt, 'data': data})
+    return _export_response(data, fmt, 'trades')
 
 
 @bp.route('/analytics/export/backtests', methods=['GET'])
@@ -82,4 +104,4 @@ def export_backtests():
         }
         for r in rows
     ]
-    return jsonify({'format': fmt, 'data': data})
+    return _export_response(data, fmt, 'backtests')

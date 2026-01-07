@@ -1,7 +1,7 @@
 # modules/strategy.py
 
 import logging
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Dict
 
 import pandas as pd
 
@@ -15,7 +15,9 @@ class Strategy:
     """
 
     def __init__(self, symbol: str, timeframe: Optional[int], mt5_connector: Optional[Any] = None,
-                 sma_period: int = 100, rsi_period: int = 14) -> None:
+                 sma_period: int = 100, rsi_period: int = 14,
+                 ml_predictor: Optional[Callable[[Dict[str, float]], Dict[str, Any]]] = None,
+                 ml_confidence_threshold: float = 0.7) -> None:
         """Inicializa la estrategia con parámetros.
 
         Args:
@@ -24,6 +26,8 @@ class Strategy:
             mt5_connector: conector opcional para obtener datos (MT5Connector).
             sma_period: periodo de la SMA.
             rsi_period: periodo del RSI.
+            ml_predictor: función opcional que recibe features y retorna {'signal': 'BUY/SELL/HOLD', 'prob': float}.
+            ml_confidence_threshold: umbral de probabilidad para aceptar la señal ML.
         """
         self.symbol: str = symbol
         self.timeframe: Optional[int] = timeframe
@@ -32,6 +36,9 @@ class Strategy:
         self.rsi_period: int = rsi_period
         # Optional external data provider (used by StrategyAdapter for backtesting)
         self.data_provider: Optional[Callable[[int], pd.DataFrame]] = None
+        # Optional ML augmentation
+        self.ml_predictor = ml_predictor
+        self.ml_confidence_threshold = ml_confidence_threshold
 
     def get_data(self, bars: int = 300) -> Optional[pd.DataFrame]:
         """Obtiene datos históricos formateados como DataFrame.
@@ -58,6 +65,23 @@ class Strategy:
         loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
         rs = gain / loss
         return 100 - (100 / (1 + rs))
+
+    def _apply_ml(self, features: Dict[str, float], base_signal: str) -> str:
+        """Si hay predictor ML, combinar señal con umbral de confianza.
+        Si el predictor no está o la probabilidad es baja, retorna `base_signal`.
+        """
+        if not self.ml_predictor:
+            return base_signal
+        try:
+            res = self.ml_predictor(features) or {}
+            ml_signal = str(res.get('signal', base_signal))
+            prob = float(res.get('prob', 0.0))
+            if prob >= self.ml_confidence_threshold and ml_signal in ('BUY', 'SELL', 'HOLD'):
+                logger.info("ML override: signal=%s prob=%.2f (threshold=%.2f)", ml_signal, prob, self.ml_confidence_threshold)
+                return ml_signal
+        except Exception:
+            logger.exception("ML predictor failed; falling back to base signal")
+        return base_signal
 
     def generate_signal(self) -> str:
         """Genera la señal actual basada en RSI y SMA.
@@ -89,7 +113,13 @@ class Strategy:
         )
         if buy_cond:
             logger.info("BUY condition met: rsi=%.2f close=%.5f sma=%.5f prev=%.5f", rsi_val, close_val, sma_val, prev_close)
-            return "BUY"
+            features = {
+                'close': float(close_val or 0.0),
+                'sma': float(sma_val or 0.0),
+                'rsi': float(rsi_val or 0.0),
+                'prev_close': float(prev_close or 0.0),
+            }
+            return self._apply_ml(features, "BUY")
 
         # ---- SELL ----
         sell_cond = (
@@ -99,7 +129,13 @@ class Strategy:
         )
         if sell_cond:
             logger.info("SELL condition met: rsi=%.2f close=%.5f sma=%.5f prev=%.5f", rsi_val, close_val, sma_val, prev_close)
-            return "SELL"
+            features = {
+                'close': float(close_val or 0.0),
+                'sma': float(sma_val or 0.0),
+                'rsi': float(rsi_val or 0.0),
+                'prev_close': float(prev_close or 0.0),
+            }
+            return self._apply_ml(features, "SELL")
 
         # ---- HOLD: log reasons ----
         reasons = []
@@ -107,9 +143,6 @@ class Strategy:
             reasons.append("rsi_na")
         else:
             reasons.append(f"rsi={rsi_val:.2f}")
-            if rsi_val <= 50 and rsi_val >= 50:
-                # redundant, kept for clarity
-                pass
         if sma_val is None:
             reasons.append("sma_na")
         else:
@@ -120,4 +153,9 @@ class Strategy:
             reasons.append(f"close_vs_prev={(close_val - prev_close):.5f}")
 
         logger.info("HOLD: %s | %s", ", ".join(reasons), str({"rsi": rsi_val, "close": close_val, "sma": sma_val, "prev": prev_close}))
-        return "HOLD"
+        return self._apply_ml({
+            'close': float(close_val or 0.0),
+            'sma': float(sma_val or 0.0),
+            'rsi': float(rsi_val or 0.0),
+            'prev_close': float(prev_close or 0.0),
+        }, "HOLD")
