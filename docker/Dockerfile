@@ -20,6 +20,7 @@ COPY docs /app/docs
 COPY Readme.md /app/Readme.md
 
 EXPOSE 5000
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD python -c "import requests; print(requests.get('http://localhost:5000/api/bot/status').status_code)" || exit 1
 
 # Start Flask webapp
 CMD ["python", "-m", "trading_phantom.webapp"]

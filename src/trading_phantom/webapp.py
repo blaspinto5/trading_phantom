@@ -10,6 +10,9 @@ import uuid
 from flask import Flask, jsonify, render_template, request
 
 from trading_phantom.backtest.run_and_visual import run_backtest_and_visual
+from trading_phantom.analytics.collector import ingest_backtest, ingest_trade
+from trading_phantom.analytics.ml_pipeline import StrategyModel
+from trading_phantom.analytics.db import init_db
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +24,12 @@ _backtest_jobs = {}
 # Bot subprocess handle
 _bot_process = None
 _bot_lock = threading.Lock()
+_ml_model = StrategyModel()
+
+try:
+    init_db()
+except Exception:
+    logger.exception('Database initialization failed; falling back to file-based only')
 
 
 @app.route('/')
@@ -99,6 +108,21 @@ def backtest_status(job_id):
     job = _backtest_jobs.get(job_id)
     if not job:
         return jsonify({'error': 'job not found'}), 404
+    # Persist completed backtest summary
+    if job.get('status') == 'done' and job.get('result'):
+        try:
+            res = job['result']
+            payload = {
+                'symbol': res.get('symbol', 'EURUSD-T'),
+                'bars': res.get('bars', 0),
+                'sma_period': res.get('sma_period', 0),
+                'rsi_period': res.get('rsi_period', 0),
+                'metrics': res.get('metrics', {}),
+                'details': res,
+            }
+            ingest_backtest(payload)
+        except Exception:
+            logger.exception('Failed to ingest backtest result')
     return jsonify(job)
 
 
@@ -225,6 +249,41 @@ def get_logs():
     except Exception:
         logger.exception('Failed to read log file')
         return jsonify({'logs': ''})
+
+
+@app.route('/api/ingest/trade', methods=['POST'])
+def api_ingest_trade():
+    """Ingest executed trade into database."""
+    data = request.get_json() or {}
+    try:
+        rid = ingest_trade(data)
+        return jsonify({'status': 'ok', 'id': rid})
+    except Exception as e:
+        logger.exception('Failed to ingest trade')
+        return jsonify({'status': 'error', 'error': str(e)}), 500
+
+
+@app.route('/api/ml/train', methods=['POST'])
+def api_ml_train():
+    """Train simple ML model based on stored trades."""
+    try:
+        res = _ml_model.train()
+        return jsonify(res)
+    except Exception as e:
+        logger.exception('ML training failed')
+        return jsonify({'status': 'error', 'error': str(e)}), 500
+
+
+@app.route('/api/ml/predict', methods=['POST'])
+def api_ml_predict():
+    """Predict profitability on a sample trade-like feature set."""
+    data = request.get_json() or {}
+    try:
+        res = _ml_model.predict(data)
+        return jsonify(res)
+    except Exception as e:
+        logger.exception('ML predict failed')
+        return jsonify({'status': 'error', 'error': str(e)}), 500
 
 
 def run_app(host='127.0.0.1', port=5000, debug=False):
