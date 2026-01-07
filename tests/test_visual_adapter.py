@@ -1,6 +1,7 @@
 # tests/test_visual_adapter.py
 import sys
 from pathlib import Path
+
 import pandas as pd
 
 # Ensure project root is importable

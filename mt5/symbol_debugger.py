@@ -1,5 +1,6 @@
-import MetaTrader5 as mt5
 import logging
+
+import MetaTrader5 as mt5
 
 logger = logging.getLogger(__name__)
 

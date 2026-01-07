@@ -1,9 +1,10 @@
-import MetaTrader5 as mt5
 import logging
-import pandas as pd
 import time
 from datetime import datetime
-from typing import Optional, Any, List, Dict
+from typing import Any, Dict, Optional
+
+import MetaTrader5 as mt5
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 

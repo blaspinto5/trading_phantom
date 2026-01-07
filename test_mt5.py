@@ -1,4 +1,5 @@
 import logging
+
 from trading_phantom.mt5.connector import MT5Connector
 
 logger = logging.getLogger(__name__)

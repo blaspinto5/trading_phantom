@@ -1,7 +1,8 @@
 # config/config_loader.py
 
-import yaml
 from pathlib import Path
+
+import yaml
 
 
 def load_config(filename="config.yaml") -> dict:

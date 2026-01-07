@@ -1,5 +1,5 @@
 # backtest/metrics.py
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 
 def calculate_metrics(trades: List[Dict[str, Any]]) -> Dict[str, float]:

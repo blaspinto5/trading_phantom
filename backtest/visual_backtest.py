@@ -1,9 +1,11 @@
 # visual_backtest.py
 
-import pandas as pd
 import logging
-from typing import Optional, Any, Dict
-from backtesting import Backtest, Strategy as BacktestStrategy
+from typing import Any, Optional
+
+import pandas as pd
+from backtesting import Backtest
+from backtesting import Strategy as BacktestStrategy
 
 from trading_phantom.modules.data_loader import load_mt5_data  # <- usar función común
 from trading_phantom.modules.strategy import Strategy as CoreStrategy

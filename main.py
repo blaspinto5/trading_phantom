@@ -1,8 +1,8 @@
 # main.py
 
+import logging
 import sys
 from pathlib import Path
-import logging
 
 # Allow running as script (python trading_phantom/main.py) or as module (python -m trading_phantom.main)
 if __package__ is None:

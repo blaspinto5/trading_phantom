@@ -1,19 +1,17 @@
 # core/orchestrator.py
 
+import logging
 import time
 from datetime import datetime
 from typing import Optional
 
-from trading_phantom.config.config_loader import load_config
-from trading_phantom.mt5.connector import MT5Connector
-from trading_phantom.modules.strategy import Strategy  # A completar luego
-from trading_phantom.modules.risk_manager import RiskManager
-from trading_phantom.modules.trader import Trader
-
 import MetaTrader5 as mt5
 
-
-import logging
+from trading_phantom.config.config_loader import load_config
+from trading_phantom.modules.risk_manager import RiskManager
+from trading_phantom.modules.strategy import Strategy  # A completar luego
+from trading_phantom.modules.trader import Trader
+from trading_phantom.mt5.connector import MT5Connector
 
 
 def run_bot(iterations: Optional[int] = None) -> None:
@@ -117,7 +115,7 @@ def run_bot(iterations: Optional[int] = None) -> None:
     except KeyboardInterrupt:
         logger.info("\n🛑 Detenido manualmente por el usuario")
 
-    except Exception as e:
+    except Exception:
         logger.exception("❌ Error crítico")
 
     finally:

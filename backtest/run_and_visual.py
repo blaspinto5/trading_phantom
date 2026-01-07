@@ -1,11 +1,13 @@
 # run_and_visual.py
 
-from trading_phantom.mt5.connector import MT5Connector
-from trading_phantom.backtest.simulation import BacktestSimulator
-from trading_phantom.backtest.metrics import calculate_metrics
-from trading_phantom.backtest.visual_backtest import run_visual_backtest
-import MetaTrader5 as mt5
 import logging
+
+import MetaTrader5 as mt5
+
+from trading_phantom.backtest.metrics import calculate_metrics
+from trading_phantom.backtest.simulation import BacktestSimulator
+from trading_phantom.backtest.visual_backtest import run_visual_backtest
+from trading_phantom.mt5.connector import MT5Connector
 
 logger = logging.getLogger(__name__)
 

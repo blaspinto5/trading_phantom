@@ -1,5 +1,3 @@
-import types
-import pytest
 
 from trading_phantom.mt5.connector import MT5Connector
 

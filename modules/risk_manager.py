@@ -1,6 +1,7 @@
-import MetaTrader5 as mt5
 from datetime import date
-from typing import Any, Optional, Tuple
+from typing import Any
+
+import MetaTrader5 as mt5
 
 
 class RiskManager:

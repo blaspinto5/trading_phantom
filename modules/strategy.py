@@ -1,9 +1,9 @@
 # modules/strategy.py
 
-import MetaTrader5 as mt5
-import pandas as pd
-from typing import Optional, Any, Callable
 import logging
+from typing import Any, Callable, Optional
+
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 

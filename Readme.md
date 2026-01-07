@@ -235,7 +235,39 @@ Desarrollado con enfoque profesional y experiencia real en MT5.
 - Añade más pruebas para mejorar cobertura y seguridad del bot.
 
 ---
+## ⚡ Quickstart — ejecutar (demo)
 
+Sigue estos pasos rápidos para ejecutar el bot en modo **demo**:
+
+1. Crear y activar un entorno virtual (PowerShell):
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+2. Ejecutar el bot (recomendado, con control de iteraciones):
+
+- PowerShell (con el script):
+  - `scripts\run_demo.ps1 -Iterations 40 -Debug`
+- Windows CMD (ejecuta el batch):
+  - `run_demo.bat 40 debug`
+- Módulo Python (cross-platform):
+  - `python -m trading_phantom.main --iterations 40 --debug`
+
+3. Detener el bot:
+
+- En la terminal: presiona `Ctrl+C` para detenerlo de forma segura.
+- Si el proceso se ejecuta en background (Windows PowerShell):
+  - Obtener PID: `Get-Process -Name python`  
+  - Matar proceso: `Stop-Process -Id <PID>`
+- En CMD: `tasklist` / `taskkill /PID <PID> /F`
+
+> 💡 Usa `--iterations` para no quedarte colgado en un bucle infinito durante pruebas.
+
+---
 ## ▶️ Ejecutar Backtest + Visual
 
 Puedes ejecutar el backtest numérico y generar el plot interactivo (usando los mismos módulos/estrategia) de dos formas:
@@ -259,6 +291,76 @@ Opciones claves:
 - `symbol`, `timeframe`, `bars`, `sma_period`, `rsi_period`
 - Ejecutar el orquestador por un número limitado de iteraciones: `python -m trading_phantom.main --iterations 5` o `--once` para una iteración.
 - En entornos sin GUI (CI/tests) llama a `run_visual_backtest(df, plot=False)` para evitar abrir una ventana.
+
+---
+
+## 🖥️ Aplicación de Escritorio (Windows .exe + instalador) ✅
+
+He añadido un empaquetado básico para convertir la aplicación en un ejecutable de Windows y crear un instalador.
+
+Características:
+- Interfaz nativa (pywebview) que abre una ventana con el dashboard local.
+- Servidor local (Flask) que sirve la app y expone APIs para: arrancar/detener el bot, ejecutar backtests y consultar logs.
+- Scripts útiles:
+  - `scripts/launcher.py` — Arranca el servidor y abre la ventana nativa (modo desarrollo y empaquetado). Ahora soporta import diferido y manejo de errores para builds empaquetadas.
+  - `scripts/build_exe.ps1` — Script PowerShell que crea un `.exe` usando PyInstaller (agrega templates, assets y config). Incluye `--collect-all trading_phantom` para evitar módulos faltantes.
+  - `installer/TradingPhantom.iss` — Plantilla Inno Setup para generar instalador `.exe` (ajusta rutas antes de compilar).
+
+Interfaz de control del bot (one-click)
+
+- La UI del dashboard incluye ahora un panel de control para el bot con:
+  - **Iterations** (opcional): limitar número de iteraciones para pruebas.
+  - **Debug** (checkbox): activar modo debug en el bot.
+  - **Start Bot (one-click)**: arranca el orquestador con los parámetros indicados.
+  - **Stop Bot**: detiene el proceso en ejecución.
+  - **Bot Logs**: panel que muestra `trading_phantom/logs/bot.log` y se refresca automáticamente cuando el bot está corriendo.
+
+Endpoints relacionados:
+- `POST /api/bot/start` — inicia el bot. Body opcional JSON: `{ "iterations": 100, "debug": true }`.
+- `POST /api/bot/stop` — detiene el bot.
+- `GET /api/bot/status` — devuelve `{ "running": true, "pid": 1234 }` o `{ "running": false }`.
+- `GET /api/logs?bot=true&lines=200` — obtiene las últimas N líneas de `bot.log`.
+
+Quickstart:
+
+1. Crear entorno e instalar dependencias:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install --upgrade pip
+pip install -r trading_phantom/requirements.txt
+```
+
+2. Ejecutar en modo desarrollo (abre ventana):
+
+```powershell
+python scripts/launcher.py --debug
+```
+
+3. Para generar un `.exe` (one-file) desde PowerShell:
+
+```powershell
+# Asegúrate de ejecutar PowerShell como Administrador si tienes restricciones de permisos.
+# 1) Crea/activa venv e instala dependencias automáticamente (el script hace esto si falta):
+.\.venv\Scripts\Activate.ps1  # o crea el venv si aún no existe
+# 2) Ejecutar el builder (generará dist\TradingPhantom.exe)
+.\scripts\build_exe.ps1 -onefile -windowed
+
+# Opciones útiles:
+# -onefile    : genera un único .exe (recomendado)
+# -windowed   : empaqueta como aplicación de ventana (sin consola)
+
+4. Compilar instalador (requiere Inno Setup): editar `installer\TradingPhantom.iss` si es necesario y ejecutar:
+
+```powershell
+# Si tienes ISCC en PATH
+.\scripts\build_installer.ps1
+```
+
+El instalador resultante aparecerá en la carpeta `installer\` como `TradingPhantom_Setup.exe`.
+
+> Nota: MetaTrader5 es necesario para la operativa en vivo; si no está disponible se recomienda usar `config.yaml` con `mode: demo`.
 
 ---
 
