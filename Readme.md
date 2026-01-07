@@ -83,61 +83,69 @@ PROYECTO 2/
 
 ---
 
-## ⚡ Inicio rápido (5 minutos)
+## ⚡ Instalación y ejecución (30 segundos)
 
-### Requisitos previos
-- **Windows 10+** (requerido para MT5 y PyInstaller)
-- **Python 3.10+** (descarga desde [python.org](https://www.python.org/downloads/))
-- **MetaTrader 5 instalado** (si vas a operar en vivo)
+### 🎯 La forma más fácil: Doble-click
 
-### Instalación y setup
+**Opción 1 - Windows (Batch):**
+1. Abre `INSTALL.bat` (doble-click)
+2. Espera ~1-2 minutos
+3. Ejecuta `RUN.bat` (doble-click)
+4. Accede a http://127.0.0.1:5000
+
+**Opción 2 - PowerShell:**
+```powershell
+.\INSTALL.ps1
+.\RUN.ps1
+```
+
+### 📋 Requisitos previos
+- **Windows 10+**
+- **Python 3.10+** (si no lo tienes: [python.org](https://www.python.org/downloads/))
+- **MetaTrader 5** (opcional, solo si operas en vivo)
+
+### 🔧 Instalación manual (si prefieres)
 
 ```powershell
-# 1. Clonar/descargar repositorio
-cd PROYECTO\ 2
-
-# 2. Crear entorno virtual
+# 1. Crear entorno virtual
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 
-# 3. Instalar dependencias
-python -m pip install --upgrade pip setuptools wheel
+# 2. Instalar dependencias
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 
-# 4. Lanzar aplicación (Flask + UI nativa)
+# 3. Ejecutar
 python scripts/launcher.py --debug
 ```
 
-La aplicación se abrirá en una ventana nativa. Accede también a:
-- **API REST**: http://127.0.0.1:5000
-- **Documentación API**: Ver [docs/API.md](docs/API.md)
+---
 
-### Primeros pasos
+## 🚀 Primera ejecución
 
-**Opción A: Backtesting interactivo (sin operación real)**
-```powershell
-# Ejecutar backtest desde la UI o mediante API
-# POST http://127.0.0.1:5000/api/backtest con parámetros
+Después de instalar, la aplicación:
+- ✅ Abre una ventana nativa
+- ✅ Inicia servidor Flask en http://127.0.0.1:5000
+- ✅ Accede a API REST, backtesting, logs
+
+### Primeras acciones
+
+**Backtesting**: Prueba una estrategia sin riesgo
+```
+UI → Backtest → Selecciona parámetros → Ejecuta
 ```
 
-**Opción B: Iniciar bot en demo/vivo**
-```powershell
-# Desde PowerShell:
-$payload = @{ debug = $true; iterations = 1 }
-Invoke-RestMethod -Uri http://127.0.0.1:5000/api/bot/start `
-  -Method Post `
-  -Body ($payload | ConvertTo-Json -Depth 5) `
-  -ContentType 'application/json'
+**Bot real**: Conecta con MetaTrader 5
+```
+UI → Bot → Start → (Requiere MT5 abierto)
 ```
 
-**Opción C: Ejecutar tests rápidos**
-```powershell
-# Verificar que todo funciona
-python -m pytest -q
+**Logs**: Monitorea operaciones
+```
+UI → Logs → Ver histórico
 ```
 
-> 💡 **Más detalles**: Ver [docs/QUICKSTART.md](docs/QUICKSTART.md) para guía completa con pantallazos
+> 📚 **Más info**: [QUICK_START.md](QUICK_START.md) (30 segundos) o [docs/QUICKSTART.md](docs/QUICKSTART.md) (5 minutos)
 
 ---
 
