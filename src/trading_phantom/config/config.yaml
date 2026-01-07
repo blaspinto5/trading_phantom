@@ -12,6 +12,21 @@ timeframe: H1       # M1, M5, M15, H1, H4, D1
 max_positions: 5
 
 # =========================
+# ESTRATEGIA
+# =========================
+strategy:
+  sma_period: 100        # período SMA
+  rsi_period: 14         # período RSI
+
+# =========================
+# MACHINE LEARNING (EXPERIMENTAL)
+# =========================
+ml:
+  enabled: false                      # Habilitar predicción ML
+  confidence_threshold: 0.7           # Umbral probabilidad (0.0-1.0)
+  # Nota: Requiere entrenar primero vía /api/analytics/ml/train
+
+# =========================
 # RIESGO
 # =========================
 risk:

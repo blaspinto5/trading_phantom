@@ -365,9 +365,90 @@ ruff check --fix .
 
 ## 📈 Analítica y ML
 
-La plataforma integra un módulo de analítica y Machine Learning que captura datos de trades y resultados de backtests, los almacena en una base de datos y entrena un modelo que sugiere señales de compra/venta. Este módulo es opcional y está desacoplado del bot; se opera vía API.
+La plataforma integra un módulo de **Machine Learning opcional** que captura datos de trades, los almacena en una base de datos y entrena un modelo que sugiere señales. Este módulo es **desacoplado del bot** y se activa vía `config.yaml` cuando hay datos suficientes.
 
-### Componentes clave
+### Flujo completo de ML en vivo
+
+```
+1. RECOLECTA DE DATOS (Sin ML)
+   ↓
+   Bot ejecuta trades → automáticamente ingestados en DB
+   Backtest completa → resultados guardados
+   
+2. ENTRENAR MODELO
+   ↓
+   API POST /api/analytics/ml/train
+   → Carga dataset de trades (≥30 requeridos)
+   → Feature engineering: (side, price, volume, pnl_lag, MA)
+   → RandomForestClassifier entrenado
+   
+3. ACTIVAR ML EN VIVO (config.yaml)
+   ↓
+   ml:
+     enabled: true
+     confidence_threshold: 0.7
+   
+4. PREDICCIÓN EN VIVO
+   ↓
+   Cada vela nueva:
+   - Strategy genera BUY/SELL/HOLD (SMA + RSI)
+   - ML predictor valida: ¿prob ≥ 0.7?
+   - Si sí: puede sobreescribir señal
+   - Si no: mantiene regla original
+   - Logs: "📈 Señal: BUY (con ML)"
+```
+
+### Componentes
+
+- **db.py**: Modelos Trade/BacktestRun; SQLite local o Postgres en Docker
+- **collector.py**: Ingesta automática desde bot y backtest
+- **ml_pipeline.py**: RandomForestClassifier con feature engineering
+- **orchestrator.py**: Lee `ml.enabled` y `ml.confidence_threshold` de config
+
+### Paso a paso: Activar ML
+
+**1. Recolectar datos (sin ML)**
+```powershell
+.\RUN.ps1
+# Ejecutar ~50-100 iteraciones para acumular datos
+```
+
+**2. Entrenar**
+```powershell
+# Desde otra terminal
+Invoke-RestMethod -Uri "http://127.0.0.1:5000/api/analytics/ml/train" -Method Post
+```
+
+**3. Editar config.yaml**
+```yaml
+ml:
+  enabled: true
+  confidence_threshold: 0.7
+```
+
+**4. Ejecutar con ML**
+```powershell
+.\RUN.ps1
+# Verás: "🤖 ML habilitado (umbral confianza: 0.70)"
+```
+
+### Endpoints analítica
+
+| Endpoint | Descripción |
+|----------|-------------|
+| `POST /api/analytics/ml/train` | Entrena modelo |
+| `POST /api/analytics/ml/predict` | Predicción manual |
+| `GET /api/analytics/export/trades?format=csv\|parquet` | Exporta dataset |
+| `GET /api/analytics/export/backtests?format=csv\|parquet` | Exporta backtests |
+
+### Notas
+
+- **Mínimo datos**: ≥30 trades para entrenar
+- **No garantiza ganancias**: Aprende patrones pasados; mercado cambia
+- **Umbral**: `confidence_threshold=0.7` → solo usa ML si prob ≥ 0.7
+- **Fallback**: Si ML falla, continúa con SMA+RSI automáticamente
+
+---
 - [src/trading_phantom/analytics/db.py](src/trading_phantom/analytics/db.py): Modelos SQLAlchemy (`Trade`, `BacktestRun`) y gestión de sesión. Por defecto usa SQLite; en Docker usa Postgres vía `DATABASE_URL`.
 - [src/trading_phantom/analytics/collector.py](src/trading_phantom/analytics/collector.py): Funciones de ingesta (`ingest_trade`, `ingest_backtest`) que validan y persisten payloads.
 - [src/trading_phantom/analytics/ml_pipeline.py](src/trading_phantom/analytics/ml_pipeline.py): `StrategyModel` con `train()` y `predict()` utilizando `RandomForestClassifier` y features básicos (SMA, RSI, variaciones de precio).

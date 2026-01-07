@@ -2,8 +2,9 @@
 
 import logging
 import time
+import os
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Callable, Dict, Any
 
 import MetaTrader5 as mt5
 
@@ -55,9 +56,31 @@ def run_bot(iterations: Optional[int] = None) -> None:
         mt5_conn.shutdown()
         return
 
-    strategy = Strategy(symbol, timeframe, mt5_conn)
+    strategy = Strategy(
+        symbol, timeframe, mt5_conn,
+        sma_period=int(config.get('strategy', {}).get('sma_period', 100)),
+        rsi_period=int(config.get('strategy', {}).get('rsi_period', 14)),
+        ml_predictor=None,
+        ml_confidence_threshold=0.7
+    )
     risk_manager = RiskManager(config, mt5_conn)
     trader = Trader(mt5_conn, risk_manager)
+
+    # Initialize ML predictor if enabled
+    ml_predictor: Optional[Callable[[Dict[str, float]], Dict[str, Any]]] = None
+    ml_config = config.get('ml', {})
+    if ml_config.get('enabled', False):
+        try:
+            from trading_phantom.analytics.ml_pipeline import StrategyModel
+            ml_model = StrategyModel()
+            ml_confidence_threshold = float(ml_config.get('confidence_threshold', 0.7))
+            logger.info("🤖 ML habilitado (umbral confianza: %.2f)", ml_confidence_threshold)
+            ml_predictor = ml_model.predict
+            strategy.ml_predictor = ml_predictor
+            strategy.ml_confidence_threshold = ml_confidence_threshold
+        except Exception:
+            logger.warning("⚠️ No se pudo inicializar ML; continuando sin él")
+            ml_config['enabled'] = False
 
     logger.info("✅ Estrategia, RiskManager y Trader inicializados")
 
@@ -97,7 +120,10 @@ def run_bot(iterations: Optional[int] = None) -> None:
                 continue
 
             signal = strategy.generate_signal()
-            logger.info("📈 Señal: %s", signal)
+            if ml_config.get('enabled') and ml_predictor:
+                logger.info("📈 Señal: %s (con ML)", signal)
+            else:
+                logger.info("📈 Señal: %s", signal)
 
             # count processed ticks (useful for --iterations testing)
             processed += 1
