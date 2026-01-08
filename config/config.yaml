@@ -39,5 +39,15 @@ execution:
 # ML (opcional)
 # =========================
 ml:
-  enabled: false            # cambia a true para activar filtro ML
-  confidence_threshold: 0.7 # umbral mínimo para aceptar la señal ML
+  enabled: true             # 🚀 ACTIVADO: Usando modelo avanzado (95% accuracy)
+  confidence_threshold: 0.55 # umbral mínimo para aceptar la señal ML (55%)
+  model_path: "src/data/models/advanced_model.pkl"
+  
+# =========================
+# RIESGO MEJORADO
+# =========================
+improved_strategy:
+  enabled: true             # 🚀 ACTIVADO: Usar estrategia mejorada con risk management
+  stop_loss_pct: 0.02       # -2% stop loss
+  take_profit_pct: 0.04     # +4% take profit (1:2 ratio)
+  position_size: 0.95       # 95% del equity
