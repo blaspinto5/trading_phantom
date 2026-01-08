@@ -36,7 +36,7 @@
       "price": 1.1642877979018145,
       "pnl": 768.9107013530761,
       "model_prediction": true,
-      "model_probability": 0.8512559523809525,
+      "model_probability": 0.8512559523809524,
       "actual_profitable": true,
       "equity": 10558.321299792651
     },
@@ -60,7 +60,7 @@
       "price": 1.1638854483730023,
       "pnl": 4.544905105641206,
       "model_prediction": true,
-      "model_probability": 0.6821845238095237,
+      "model_probability": 0.6821845238095239,
       "actual_profitable": true,
       "equity": 10617.66644861918
     },
@@ -84,7 +84,7 @@
       "price": 1.1622527992021818,
       "pnl": 687.5526296444834,
       "model_prediction": true,
-      "model_probability": 0.8545416666666666,
+      "model_probability": 0.8545416666666665,
       "actual_profitable": true,
       "equity": 11896.260861560206
     },
@@ -96,7 +96,7 @@
       "price": 1.1635666142716987,
       "pnl": -303.0944772276944,
       "model_prediction": false,
-      "model_probability": 0.393375,
+      "model_probability": 0.3933749999999999,
       "actual_profitable": false,
       "equity": 11593.166384332511
     },
@@ -132,7 +132,7 @@
       "price": 1.1652797607767764,
       "pnl": 835.5171961541563,
       "model_prediction": true,
-      "model_probability": 0.8931785714285715,
+      "model_probability": 0.8931785714285714,
       "actual_profitable": true,
       "equity": 11565.123395471925
     }
@@ -339,5 +339,5 @@
     1725.5586667722987,
     972.4655120173185
   ],
-  "timestamp": "2026-01-08T19:15:41.702158"
+  "timestamp": "2026-01-08T19:20:26.325101"
 }
