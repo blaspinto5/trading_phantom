@@ -5,6 +5,13 @@ import time
 from datetime import datetime
 from typing import Optional
 
+from trading_phantom.config.config_loader import load_config
+from trading_phantom.mt5.connector import MT5Connector
+from trading_phantom.modules.strategy import Strategy
+from trading_phantom.modules.risk_manager import RiskManager
+from trading_phantom.modules.trader import Trader
+from trading_phantom.modules.trade_history import TradeHistory
+
 import MetaTrader5 as mt5
 
 from trading_phantom.config.config_loader import load_config
@@ -58,18 +65,25 @@ def run_bot(iterations: Optional[int] = None) -> None:
     strategy = Strategy(symbol, timeframe, mt5_conn)
     risk_manager = RiskManager(config, mt5_conn)
     trader = Trader(mt5_conn, risk_manager)
+    trade_history = TradeHistory()
 
-    logger.info("✅ Estrategia, RiskManager y Trader inicializados")
+    logger.info("✅ Estrategia, RiskManager, Trader e Historial inicializados")
 
     last_candle_time = None
     traded_this_candle = False
     processed = 0
+    last_summary_time = datetime.now()
 
     try:
         while True:
             logger.debug("-----------------------------")
             now = datetime.now()
             logger.info("🕒 Tick: %s", now)
+
+            # Mostrar resumen cada 30 minutos
+            if (now - last_summary_time).total_seconds() > 1800:
+                trade_history.print_summary()
+                last_summary_time = now
 
             price = mt5_conn.get_price(symbol)
             if price is None:
@@ -108,16 +122,27 @@ def run_bot(iterations: Optional[int] = None) -> None:
             if signal != "HOLD":
                 executed = trader.execute(signal, price)
                 if executed:
+                    trade_history.add_trade(
+                        ticket=executed["ticket"],
+                        symbol=executed["symbol"],
+                        signal=executed["signal"],
+                        volume=executed["volume"],
+                        entry_price=executed["entry_price"],
+                        sl=executed["sl"],
+                        tp=executed["tp"]
+                    )
                     traded_this_candle = True
 
             time.sleep(loop_interval)
 
     except KeyboardInterrupt:
         logger.info("\n🛑 Detenido manualmente por el usuario")
+        trade_history.print_summary()
 
     except Exception:
         logger.exception("❌ Error crítico")
 
     finally:
+        trade_history.print_summary()
         mt5_conn.shutdown()
         logger.info("✅ Trading Phantom finalizado correctamente")

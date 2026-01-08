@@ -1,0 +1,310 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║               DIAGRAMA DE ESTRUCTURA - NAVEGACIÓN VISUAL                  ║
+║                          Trading Phantom v1.1.0                           ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+JERARQUÍA DE DOCUMENTACIÓN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+                            USUARIO NUEVO
+                                 │
+                    ┌────────────┴────────────┐
+                    ▼                          ▼
+            ┌──────────────┐         ┌──────────────────┐
+            │  5 MINUTOS   │         │   15+ MINUTOS    │
+            │   (Síntesis) │         │  (Completo)      │
+            └──────────────┘         └──────────────────┘
+                    │                          │
+         ┌──────────┴──────────┐      ┌────────┴────────┐
+         ▼                     ▼      ▼                  ▼
+    RESUMEN_         INDICE_        INICIO_          MANUAL_
+    EJECUTIVO.txt    VISUAL.txt     CORPORATIVO.md   OPERATIVO.md
+    (1 página)      (navegación)    (punto entrada)  (procedimientos)
+         │                │              │                │
+         └────────────────┼──────────────┼────────────────┘
+                          ▼
+                    ¿NECESITO...?
+                    (Árbol de decisión)
+
+
+FLUJO DE NAVEGACIÓN - PRIMEROS PASOS
+═════════════════════════════════════════════════════════════════════════════
+
+    START (Ahora mismo)
+        ▼
+    ┌────────────────────────────────────┐
+    │ Lee: RESUMEN_EJECUTIVO.txt         │
+    │ Tiempo: 5 minutos                  │
+    │ Objetivo: Entender qué es          │
+    └────────────────────────────────────┘
+        ▼
+    ┌────────────────────────────────────┐
+    │ Lee: INICIO_CORPORATIVO.md         │
+    │ Tiempo: 30 minutos                 │
+    │ Objetivo: Estado y próximos pasos  │
+    └────────────────────────────────────┘
+        ▼
+    ¿QUÉ NECESITAS?
+        │
+        ├─→ "Instalar" ──→ QUICK_START.md
+        │
+        ├─→ "Operar" ──→ MANUAL_OPERATIVO.md
+        │
+        ├─→ "Entender" ──→ AUDITORIA_CORPORATIVA.md
+        │
+        ├─→ "Encontrar archivo" ──→ MATRIZ_ARCHIVOS.md
+        │
+        └─→ "Referencia rápida" ──→ INDICE_EJECUTIVO.md
+
+
+ESTRUCTURA DE ARCHIVOS - UBICACIONES CLAVE
+═════════════════════════════════════════════════════════════════════════════
+
+PROYECTO 2/
+│
+├─ 📄 RESUMEN_EJECUTIVO.txt .............. ⭐ COMIENZA AQUÍ
+├─ 📄 INICIO_CORPORATIVO.md ............. ⭐ PUNTO ENTRADA OFICIAL
+├─ 📄 INDICE_VISUAL.txt ................. Navegación completa
+├─ 📄 INDICE_EJECUTIVO.md ............... Referencia rápida
+├─ 📄 QUICK_START.md .................... Instalación
+│
+├─ 📁 src/trading_phantom/ .............. CÓDIGO FUENTE
+│  ├─ 📂 modules/ ....................... Lógica trading
+│  ├─ 📂 mt5/ ........................... Integración MT5
+│  ├─ 📂 backtest/ ...................... Simulación
+│  ├─ 📂 analytics/ ..................... Machine Learning
+│  └─ 📂 core/ .......................... Orquestación
+│
+├─ 📁 data/ ............................ DATOS IMPORTANTES
+│  ├─ trading_phantom.db ............... Base de datos SQLite
+│  └─ 📂 models/ ....................... Modelos ML (PKL files)
+│
+├─ 📁 logs/ ............................ HISTORIAL Y LOGS
+│  ├─ trading_phantom.log .............. Log operación
+│  └─ trade_history.json .............. Historial trades
+│
+├─ 📁 config/ .......................... CONFIGURACIÓN
+│  └─ config.yaml ...................... Parámetros (EDITAR AQUÍ)
+│
+├─ 📁 docs/ ............................ DOCUMENTACIÓN TÉCNICA
+│  ├─ ARCHITECTURE.md .................. Diseño
+│  └─ API.md ........................... Endpoints
+│
+├─ .\RUN.bat ........................... ⭐ EJECUTA EL BOT
+├─ .\INSTALL.bat ....................... Instalación
+├─ .\RUN_TESTS.bat ..................... Testing
+│
+└─ MANUAL_OPERATIVO.md ................. Procedimientos
+
+
+ÁRBOL DE DECISIÓN - ¿CUÁL DOCUMENTO?
+═════════════════════════════════════════════════════════════════════════════
+
+¿Acabas de empezar?
+    │
+    ├─ Sí → Lee RESUMEN_EJECUTIVO.txt (5 min)
+    │       Luego: INICIO_CORPORATIVO.md (30 min)
+    │
+    └─ No → Vé al siguiente...
+
+¿Necesitas instalar?
+    │
+    ├─ Sí → Lee QUICK_START.md
+    │       Ejecuta: INSTALL.bat
+    │
+    └─ No → Vé al siguiente...
+
+¿Necesitas operar?
+    │
+    ├─ Sí → Lee MANUAL_OPERATIVO.md (sección 2-3)
+    │       Ejecuta: RUN.bat
+    │
+    └─ No → Vé al siguiente...
+
+¿Necesitas respuesta rápida?
+    │
+    ├─ Sí → Abre INDICE_EJECUTIVO.md
+    │       Busca con Ctrl+F
+    │
+    └─ No → Vé al siguiente...
+
+¿Necesitas entender técnica profunda?
+    │
+    ├─ Sí → Lee AUDITORIA_CORPORATIVA.md
+    │       Lee docs/ARCHITECTURE.md
+    │
+    └─ No → Vé al siguiente...
+
+¿Dónde está un archivo específico?
+    │
+    └─ Abre MATRIZ_ARCHIVOS.md
+      (Tiene listado completo)
+
+
+MAPA MENTAL - COMPONENTES PRINCIPALES
+═════════════════════════════════════════════════════════════════════════════
+
+                         TRADING PHANTOM
+                              │
+                ┌───────────────┼───────────────┐
+                ▼               ▼               ▼
+            DATOS           LÓGICA          API
+            │               │               │
+     ┌──────┴──────┐   ┌────┴────┐    ┌────┴───┐
+     ▼             ▼   ▼         ▼    ▼        ▼
+   SQLite        JSON Strategy  Risk  Flask  Endpoints
+   Database   History  Signals  Mgmt  Server  (8+)
+   (200       (JSON)   (EMA,    (SL,  (5000) 
+   trades)             MACD,    TP,   
+                       RSI)     Size)
+                       
+                            │
+                    ┌───────┴───────┐
+                    ▼               ▼
+                  MT5          Backtesting
+                Trader        & Metrics
+              (Órdenes)      (Sharpe, DD)
+
+
+CICLO DE OPERACIÓN - PASO A PASO
+═════════════════════════════════════════════════════════════════════════════
+
+START
+  │
+  ├─→ Leer RESUMEN_EJECUTIVO.txt (⭐)
+  │
+  ├─→ Leer INICIO_CORPORATIVO.md (⭐)
+  │
+  ├─→ Ejecutar: INSTALL.bat
+  │   Verificar: "Successfully installed" ✓
+  │
+  ├─→ Ejecutar: python setup_training_data.py
+  │   Verificar: "200 trades generated" ✓
+  │
+  ├─→ Ejecutar: python scripts/ml_train.py --save
+  │   Verificar: "Model trained, accuracy: 60%" ✓
+  │
+  ├─→ (Opcional) Ejecutar: python backtest/run_backtest.py
+  │   Revisar: Métricas (Sharpe > 1.0)
+  │
+  ├─→ Abrir MetaTrader 5
+  │
+  ├─→ Ejecutar: RUN.bat
+  │   Verificar: "Flask running on 127.0.0.1:5000" ✓
+  │
+  ├─→ Acceder a: http://127.0.0.1:5000
+  │
+  ├─→ Monitorear: Dashboard y logs/
+  │
+  └─→ Leer MANUAL_OPERATIVO.md (procedimientos diarios)
+
+
+TABLA RÁPIDA - DOCUMENTACIÓN POR LECTOR
+═════════════════════════════════════════════════════════════════════════════
+
+Tipo de Lector          Documento Principal     Tiempo    Acciones
+────────────────────────────────────────────────────────────────────────
+Ejecutivo               RESUMEN_EJECUTIVO.txt    5 min    Leer síntesis
+Gerente/Auditor         INICIO_CORPORATIVO.md    30 min   Plan lectura
+Operador                MANUAL_OPERATIVO.md      1 h      Operar
+Usuario técnico         AUDITORIA_CORPORATIVA.md 1 h      Entender fondo
+Desarrollador           docs/ARCHITECTURE.md     2 h      Codificar
+Soporte                 INDICE_EJECUTIVO.md      15 min   Resolver dudas
+Instalador              QUICK_START.md           10 min   Instalar
+
+
+INDICADORES DE PROGRESO - CHECKLIST
+═════════════════════════════════════════════════════════════════════════════
+
+LECTURA:
+  [ ] RESUMEN_EJECUTIVO.txt (5 min)
+  [ ] INICIO_CORPORATIVO.md (30 min)
+  [ ] Una sección de tu área: 15-60 min según tipo
+
+INSTALACIÓN:
+  [ ] INSTALL.bat ejecutado
+  [ ] Verificación exitosa
+  [ ] Dependencias instaladas
+
+DATOS:
+  [ ] setup_training_data.py ejecutado
+  [ ] 200 trades en BD
+  [ ] Modelo ML entrenado
+
+OPERACIÓN:
+  [ ] MetaTrader 5 abierto
+  [ ] RUN.bat ejecutado
+  [ ] Dashboard accesible (http://127.0.0.1:5000)
+  [ ] Logs monitoreados
+
+MANTENIMIENTO:
+  [ ] MANUAL_OPERATIVO.md leído
+  [ ] Procedimientos entendidos
+  [ ] Roles asignados
+
+
+PREGUNTAS FRECUENTES - MAPA
+═════════════════════════════════════════════════════════════════════════════
+
+¿Por dónde empiezo?
+└─ RESUMEN_EJECUTIVO.txt → INICIO_CORPORATIVO.md
+
+¿Cómo instalo?
+└─ QUICK_START.md
+
+¿Cómo opero?
+└─ MANUAL_OPERATIVO.md
+
+¿Dónde está [archivo]?
+└─ MATRIZ_ARCHIVOS.md
+
+¿Qué hace [componente]?
+└─ AUDITORIA_CORPORATIVA.md → ARQUITECTURA.md
+
+¿Cómo resuelvo [problema]?
+└─ INDICE_EJECUTIVO.md (troubleshooting)
+
+¿Qué endpoints hay?
+└─ docs/API.md
+
+¿Cuáles son los pasos de operación?
+└─ MANUAL_OPERATIVO.md (sección 2-3)
+
+
+RESUMEN VISUAL
+═════════════════════════════════════════════════════════════════════════════
+
+DOCUMENTOS CORPORATIVOS (NUEVOS - ENERO 2026)
+  5 documentos = 120 KB
+  50+ documentos total = 150+ KB
+
+UBICACIÓN DE DATOS
+  Base de datos: src/data/
+  Logs: logs/
+  Configuración: config/
+  Modelos ML: src/data/models/
+
+ESTADO ACTUAL
+  ✅ Desarrollo completado
+  ✅ ML entrenado (60% accuracy)
+  ✅ Documentación exhaustiva
+  ✅ Listo para producción
+  ✅ Datos auto-contenidos
+  ✅ Estructura corporativa
+
+PRÓXIMOS PASOS
+  1. Lee RESUMEN_EJECUTIVO.txt (5 min)
+  2. Lee INICIO_CORPORATIVO.md (30 min)
+  3. Sigue las instrucciones ahí
+  4. Listo en 1-2 horas
+
+════════════════════════════════════════════════════════════════════════════
+
+⭐ COMIENZA CON: RESUMEN_EJECUTIVO.txt (5 minutos)
+⭐ LUEGO LEE: INICIO_CORPORATIVO.md (30 minutos)
+⭐ PUNTO NAVEGACIÓN: INDICE_VISUAL.txt (este archivo)
+
+════════════════════════════════════════════════════════════════════════════

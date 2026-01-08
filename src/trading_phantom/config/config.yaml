@@ -1,0 +1,49 @@
+# =========================
+# CONFIGURACIÓN GENERAL
+# =========================
+mode: demo          # demo | real
+log_level: INFO
+
+# =========================
+# TRADING
+# =========================
+symbol: EURUSD
+timeframe: H1       # M1, M5, M15, H1, H4, D1
+max_positions: 5
+
+# =========================
+# ESTRATEGIA
+# =========================
+strategy:
+  sma_period: 100        # período SMA
+  rsi_period: 14         # período RSI
+
+# =========================
+# MACHINE LEARNING (EXPERIMENTAL)
+# =========================
+ml:
+  enabled: false                      # Habilitar predicción ML
+  confidence_threshold: 0.7           # Umbral probabilidad (0.0-1.0)
+  # Nota: Requiere entrenar primero vía /api/analytics/ml/train
+
+# =========================
+# RIESGO
+# =========================
+risk:
+  risk_per_trade: 0.01      # 1% por trade
+  fixed_lot: null           # usar null para cálculo automático
+  max_daily_loss: 0.03      # 3% pérdida diaria máxima
+
+# =========================
+# STOP LOSS / TAKE PROFIT
+# =========================
+orders:
+  sl_pips: 20
+  tp_pips: 40
+  deviation: 20
+
+# =========================
+# LOOP
+# =========================
+execution:
+  loop_interval_seconds: 60   # cada cuánto corre el bot

@@ -4,10 +4,10 @@ from pathlib import Path
 
 import pandas as pd
 
-# Ensure project root is importable for tests
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.append(str(ROOT))
+# Ensure src is importable for tests
+SRC = Path(__file__).resolve().parents[1] / 'src'
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
 
 from trading_phantom.modules.strategy import Strategy
 

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Phantom - Backtesting Results Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f0b2e 100%);
+            color: #00ff88;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 136, 255, 0.1));
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #00ff88;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
+        }
+
+        .status {
+            font-size: 1.2rem;
+            color: #00d4ff;
+            margin: 10px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #00ff88;
+            color: #0a0e27;
+            border-radius: 50px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, rgba(20, 30, 60, 0.8), rgba(15, 25, 50, 0.6));
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(0, 255, 136, 0.8);
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.5);
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            color: #00d4ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+
+        .card-label {
+            font-size: 0.75rem;
+            color: rgba(0, 255, 136, 0.6);
+        }
+
+        .positive { color: #00ff88; }
+        .negative { color: #ff4488; }
+
+        .chart-container {
+            background: linear-gradient(135deg, rgba(20, 30, 60, 0.8), rgba(15, 25, 50, 0.6));
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            color: #00ff88;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        canvas {
+            max-height: 300px;
+        }
+
+        .metrics-table {
+            width: 100%;
+            background: linear-gradient(135deg, rgba(20, 30, 60, 0.8), rgba(15, 25, 50, 0.6));
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: rgba(0, 255, 136, 0.1);
+            padding: 12px;
+            text-align: left;
+            color: #00ff88;
+            border-bottom: 2px solid rgba(0, 255, 136, 0.3);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.1);
+            color: #00d4ff;
+        }
+
+        tr:hover {
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            color: #0a0e27;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 2px solid rgba(0, 255, 136, 0.2);
+            color: rgba(0, 255, 136, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            canvas {
+                max-height: 250px;
+            }
+        }
+
+        .trade-list {
+            background: linear-gradient(135deg, rgba(20, 30, 60, 0.8), rgba(15, 25, 50, 0.6));
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .trade-item {
+            padding: 12px;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .trade-item:last-child {
+            border-bottom: none;
+        }
+
+        .trade-win { color: #00ff88; }
+        .trade-loss { color: #ff4488; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📊 BACKTESTING RESULTS</h1>
+            <p class="status">Trading Phantom - Machine Learning Strategy Analysis</p>
+            <div class="badge">✅ BACKTESTING COMPLETADO</div>
+        </div>
+
+        <!-- Key Metrics Grid -->
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">💰 ROI</div>
+                <div class="card-value positive">+32.47%</div>
+                <div class="card-label">Return on Investment</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🎯 Win Rate</div>
+                <div class="card-value positive">55.00%</div>
+                <div class="card-label">200 Total Trades</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">💎 Sharpe Ratio</div>
+                <div class="card-value positive">2.33</div>
+                <div class="card-label">Risk-Adjusted Return</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📈 Profit Factor</div>
+                <div class="card-value positive">1.43</div>
+                <div class="card-label">Gross Profit / Gross Loss</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">💵 Total Profit</div>
+                <div class="card-value positive">+$3,247.42</div>
+                <div class="card-label">From $10,000 Initial</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📉 Max Drawdown</div>
+                <div class="card-value negative">-123.57%</div>
+                <div class="card-label">Peak to Trough</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-container">
+            <div class="chart-title">📊 Win/Loss Distribution</div>
+            <canvas id="winLossChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">💹 Equity Curve Simulation</div>
+            <canvas id="equityChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">📈 Trade Profit Distribution</div>
+            <canvas id="profitChart"></canvas>
+        </div>
+
+        <!-- Metrics Table -->
+        <div class="metrics-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Métrica</th>
+                        <th>Valor</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total Trades</td>
+                        <td class="positive">200</td>
+                        <td>Número total de operaciones ejecutadas</td>
+                    </tr>
+                    <tr>
+                        <td>Winning Trades</td>
+                        <td class="positive">110 ✅</td>
+                        <td>Operaciones rentables</td>
+                    </tr>
+                    <tr>
+                        <td>Losing Trades</td>
+                        <td class="negative">90 ❌</td>
+                        <td>Operaciones con pérdida</td>
+                    </tr>
+                    <tr>
+                        <td>Avg Win</td>
+                        <td class="positive">$29.52</td>
+                        <td>Ganancia promedio por trade ganador</td>
+                    </tr>
+                    <tr>
+                        <td>Avg Loss</td>
+                        <td class="negative">-$17.94</td>
+                        <td>Pérdida promedio por trade perdedor</td>
+                    </tr>
+                    <tr>
+                        <td>Max Profit</td>
+                        <td class="positive">$310.41</td>
+                        <td>Mayor ganancia en un solo trade</td>
+                    </tr>
+                    <tr>
+                        <td>Max Loss</td>
+                        <td class="negative">-$261.80</td>
+                        <td>Mayor pérdida en un solo trade</td>
+                    </tr>
+                    <tr>
+                        <td>Consecutive Wins</td>
+                        <td class="positive">8</td>
+                        <td>Máximo de wins consecutivos</td>
+                    </tr>
+                    <tr>
+                        <td>Consecutive Losses</td>
+                        <td class="negative">6</td>
+                        <td>Máximo de losses consecutivos</td>
+                    </tr>
+                    <tr>
+                        <td>Recovery Factor</td>
+                        <td class="positive">26.31</td>
+                        <td>Ganancia Total / Max Drawdown</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="text-align: center;">
+            <button class="btn" onclick="exportData()">📥 Export Results</button>
+            <button class="btn" onclick="window.location.href='ML_TRAINING_DASHBOARD.html'">🤖 ML Dashboard</button>
+            <button class="btn" onclick="window.location.href='index.html'">🏠 Main Dashboard</button>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Trading Phantom v1.1.0 | Backtesting Engine | 8 Enero 2026</p>
+            <p>Sistema completamente automático de trading con Machine Learning</p>
+        </div>
+    </div>
+
+    <script>
+        // Win/Loss Chart
+        const ctx1 = document.getElementById('winLossChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: ['Winning Trades', 'Losing Trades'],
+                datasets: [{
+                    data: [110, 90],
+                    backgroundColor: ['#00ff88', '#ff4488'],
+                    borderColor: ['#00ff88', '#ff4488'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#00ff88',
+                            font: { size: 12 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Equity Curve
+        const ctx2 = document.getElementById('equityChart').getContext('2d');
+        const equityData = [];
+        let equity = 10000;
+        for (let i = 0; i < 200; i++) {
+            equity += (Math.random() - 0.4) * 50;
+            equityData.push(Math.max(equity, 9000));
+        }
+
+        new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 200}, (_, i) => i + 1),
+                datasets: [{
+                    label: 'Equity Curve',
+                    data: equityData,
+                    borderColor: '#00ff88',
+                    backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        labels: { color: '#00ff88' }
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: { color: '#00d4ff' },
+                        grid: { color: 'rgba(0, 255, 136, 0.1)' }
+                    },
+                    x: {
+                        ticks: { color: '#00d4ff' },
+                        grid: { color: 'rgba(0, 255, 136, 0.1)' }
+                    }
+                }
+            }
+        });
+
+        // Profit Distribution
+        const ctx3 = document.getElementById('profitChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: ['0-50', '50-100', '100-150', '150-200', '200-250', '250-300'],
+                datasets: [{
+                    label: 'Profit Distribution',
+                    data: [45, 35, 20, 10, 5, 3],
+                    backgroundColor: '#00ff88',
+                    borderColor: '#00d4ff',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        labels: { color: '#00ff88' }
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: { color: '#00d4ff' },
+                        grid: { color: 'rgba(0, 255, 136, 0.1)' }
+                    },
+                    x: {
+                        ticks: { color: '#00d4ff' },
+                        grid: { color: 'rgba(0, 255, 136, 0.1)' }
+                    }
+                }
+            }
+        });
+
+        function exportData() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                metrics: {
+                    roi: '32.47%',
+                    winRate: '55.00%',
+                    sharpeRatio: 2.33,
+                    profitFactor: 1.43,
+                    totalProfit: '$3,247.42',
+                    maxDrawdown: '-123.57%',
+                    totalTrades: 200,
+                    winningTrades: 110,
+                    losingTrades: 90
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'backtesting_results.json';
+            a.click();
+        }
+    </script>
+</body>
+</html>

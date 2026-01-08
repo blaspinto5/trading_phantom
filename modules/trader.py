@@ -13,8 +13,8 @@ class Trader:
     # =========================
     # EJECUTAR OPERACIÓN
     # =========================
-    def execute(self, signal: str, price: Dict[str, Any]) -> Optional[Any]:
-        """Ejecuta una orden si el risk_manager lo permite; devuelve el resultado MT5 o None."""
+    def execute(self, signal: str, price: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Ejecuta una orden si el risk_manager lo permite; devuelve un diccionario con detalles del trade o None."""
 
         check = self.risk.check(signal, price)
 
@@ -44,8 +44,20 @@ class Trader:
             logger.error("❌ Orden rechazada: %s", getattr(result, 'retcode', None))
             return None
 
-        logger.info("✅ Orden ejecutada correctamente | Ticket: %s", getattr(result, 'order', None))
-        return result
+        ticket = getattr(result, 'order', None)
+        logger.info("✅ Orden ejecutada correctamente | Ticket: %s", ticket)
+        
+        # Retornar diccionario con detalles del trade
+        return {
+            "ticket": ticket,
+            "signal": signal,
+            "symbol": price["symbol"],
+            "volume": check['volume'],
+            "entry_price": price['bid'] if signal == "SELL" else price['ask'],
+            "sl": check['sl'],
+            "tp": check['tp'],
+            "result": result
+        }
 
     # =========================
     # CERRAR TODAS LAS POSICIONES

@@ -11,3 +11,10 @@ pywebview>=3.6
 
 # Build tools (optional on dev machine)
 pyinstaller>=5.0
+
+# Data & ML & DB
+SQLAlchemy>=2.0
+psycopg2-binary>=2.9
+scikit-learn>=1.3
+requests>=2.31
+pyarrow>=14.0
