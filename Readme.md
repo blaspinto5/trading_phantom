@@ -38,6 +38,19 @@ Abrir en navegador:
 2. **[00_START_HERE.md](00_START_HERE.md)** - Introducción
 3. **[docs/guias/QUICK_START_BOT_VIVO.md](docs/guias/QUICK_START_BOT_VIVO.md)** - Cómo operar
 
+---
+
+## 📢 Documentación unificada (GitHub Pages)
+
+He consolidado toda la documentación en una página central bajo la carpeta `docs/` para publicar fácilmente con GitHub Pages.
+
+- Entrada principal de la documentación: [`docs/ALL_DOCS_SUMMARY.md`](docs/ALL_DOCS_SUMMARY.md)
+- Análisis por archivo y auditoría detallada: [`AUDITORIA_PROYECTO.md`](AUDITORIA_PROYECTO.md)
+
+Para publicar como página web, renombra `docs/ALL_DOCS_SUMMARY.md` a `docs/index.md` o habilita GitHub Pages desde la carpeta `docs/` en la configuración del repositorio.
+
+¿Quieres que lo convierta ahora a `docs/index.md` y haga el commit? Responde "sí" para que lo haga.
+
 ### 📖 Documentación por tema
 - **Guías prácticas:** [`docs/guias/`](docs/guias/) - Cómo hacer cosas
 - **Análisis técnico:** [`docs/análisis/`](docs/análisis/) - Decisiones y viabilidad
