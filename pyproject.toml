@@ -2,3 +2,13 @@
 line-length = 88
 select = ["E", "F", "W", "I", "C", "B"]
 # Removed flake8-specific ignore entries incompatible with current ruff
+# Exclude legacy/archive content from lint checks to avoid noise in CI and local runs
+exclude = ["archive", "archive/**"]
+
+[tool.black]
+line-length = 88
+exclude = '(^|/)(\.venv|\.git|archive)(/|$)'
+
+[tool.isort]
+profile = "black"
+skip = ["archive"]
