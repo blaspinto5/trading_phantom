@@ -3,3 +3,4 @@ pytest-cov
 pandas
 numpy
 scikit-learn
+flask
