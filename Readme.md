@@ -1,32 +1,57 @@
 
-# 🤖 TRADING PHANTOM — Principal
 
-Proyecto modular de trading algorítmico con ML, backtesting y dashboard.
+# 🤖 TRADING PHANTOM
 
-Resumen breve:
-- Bot modular para MetaTrader 5 (demo/real)
-- Backtesting con métricas profesionales
-- Sistema ML integrado (RandomForest por defecto)
+Enterprise-grade, modular algorithmic trading framework with ML, backtesting
+and a monitoring dashboard. This repository contains the canonical package
+under `src/trading_phantom/` plus tools, backtesting scripts and docs.
 
-Requisitos: Python 3.10+, pip, (opcional) MetaTrader 5
+Badges
+- CI: ![CI](https://github.com/blaspinto5/trading_phantom/actions/workflows/ci.yml/badge.svg)
+- License: ![MIT](https://img.shields.io/badge/license-MIT-green)
 
-Inicio rápido (desarrollo):
+Quick links
+- Documentation: [docs/index.md](docs/index.md)
+- Developer docs (Spanish): [documentacion/README.md](documentacion/README.md)
+- Legacy scripts: [scripts/legacy/](scripts/legacy/)
+
+Requirements
+- Python 3.10+
+- Recommended: virtualenv or venv
+
+Developer quickstart
+1. Create and activate virtualenv:
+
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
+```
+
+2. Install dependencies:
+
+```powershell
 pip install -r requirements.txt
+pip install -r requirements-dev.txt
+```
+
+3. Run tests:
+
+```powershell
 pytest -q
 ```
 
-Arrancar el bot (entorno configurado):
+Run the bot (development)
+
 ```powershell
 python -m trading_phantom.core.orchestrator --run
 ```
 
-Documentación completa en `docs/` y `documentacion/`.
+Notes on repository layout
+- `src/trading_phantom/`: main package (import with `PYTHONPATH=src`).
+- `scripts/legacy/`: migrated legacy top-level scripts (kept for reference).
+- `tools/`: helper scripts and smoke/integration checks.
+- `docs/` and `documentacion/`: user and developer documentation.
 
-Notas de organización:
-- Scripts sueltos del root movidos a `scripts/legacy/`.
-- El paquete principal está en `src/trading_phantom/`.
-
-¿Quieres que abra un PR con estos cambios y los de la reorganización? Puedo crear la rama y preparar el commit.
+If the README content on GitHub still looks incorrect after this change,
+refresh the cache or open the repo page — I will push this fix to `main`
+now (unless you prefer a PR first).
