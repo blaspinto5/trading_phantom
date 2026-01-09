@@ -17,3 +17,10 @@ pytest_cache/
 logs/
 installer/TradingPhantom_Setup.exe
 /dist
+
+# Archivos .md secundarios en raíz (mantener solo 3 principales)
+/*/*.md
+/*/*.txt
+!/README.md
+!/INDEX.md
+!/MANUAL_OPERATIVO.md
