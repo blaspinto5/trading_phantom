@@ -18,6 +18,10 @@ logs/
 installer/TradingPhantom_Setup.exe
 /dist
 
+# Coverage and CI helper
+.coverage
+requirements-ci.txt
+
 # Archivos .md secundarios en raíz (mantener solo 3 principales)
 /*.md
 /*.txt
