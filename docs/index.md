@@ -1,47 +1,35 @@
-# SUMARIO UNIFICADO DE DOCUMENTACIÓN
+# Documentación unificada — Trading Phantom
 
-Este archivo centraliza y presenta la documentación del proyecto para publicarla como una página de GitHub (GitHub Pages) desde la carpeta `docs/`.
+Este índice central presenta la documentación del proyecto y sirve como
+puerta de entrada para GitHub Pages (carpeta `docs/`). Está orientado a
+colaboradores, revisores y operadores.
 
-## Estado
-- Documento de auditoría por archivo: `AUDITORIA_PROYECTO.md` (contiene análisis detallado por fichero)
-- Documento con la nueva estructura y resumen de cambios: `ESTRUCTURA_FINAL.md`
+Estado y archivos clave:
+- `ESTRUCTURA_FINAL.md` — resumen de la reorganización del repo
+- `AUDITORIA_PROYECTO.md` — resultados de auditoría técnica
 
-## Índice rápido (enlaces a la documentación dentro del repo)
+Guías rápidas:
+- [Quick start - Bot en vivo](guias/QUICK_START_BOT_VIVO.md)
+- [Quick backtest paralelo](guias/QUICK_BACKTEST_PARALELO.md)
+- [Manual operativo](guias/MANUAL_OPERATIVO.md)
 
-### Guías prácticas
-- [docs/guias/QUICK_START_BOT_VIVO.md](docs/guias/QUICK_START_BOT_VIVO.md)
-- [docs/guias/QUICK_BACKTEST_PARALELO.md](docs/guias/QUICK_BACKTEST_PARALELO.md)
-- [docs/guias/MANUAL_OPERATIVO.md](docs/guias/MANUAL_OPERATIVO.md)
+Análisis técnicos:
+- [Viabilidad M1](análisis/ANALISIS_M1_VIABILIDAD.md)
+- [Backtesting paralelo](análisis/BACKTESTING_PARALELO.md)
+- [Mejoras de estrategia](análisis/ANALISIS_MEJORAS_ESTRATEGIA.md)
 
-### Análisis técnicos
-- [docs/análisis/ANALISIS_M1_VIABILIDAD.md](docs/análisis/ANALISIS_M1_VIABILIDAD.md)
-- [docs/análisis/BACKTESTING_PARALELO.md](docs/análisis/BACKTESTING_PARALELO.md)
-- [docs/análisis/ANALISIS_MEJORAS_ESTRATEGIA.md](docs/análisis/ANALISIS_MEJORAS_ESTRATEGIA.md)
+Resúmenes y estado de ejecución:
+- [Bot en vivo — Resumen](resúmenes/BOT_EN_VIVO.md)
+- [Resumen ejecutivo de backtest](resúmenes/RESUMEN_EJECUTIVO_BACKTEST_MEJORAS.md)
 
-### Resúmenes y estado
-- [docs/resúmenes/BOT_EN_VIVO.md](docs/resúmenes/BOT_EN_VIVO.md)
-- [docs/resúmenes/RESUMEN_EJECUTIVO_BACKTEST_MEJORAS.md](docs/resúmenes/RESUMEN_EJECUTIVO_BACKTEST_MEJORAS.md)
-- [docs/resúmenes/QUE_PASO_RESUMEN.md](docs/resúmenes/QUE_PASO_RESUMEN.md)
+Otros recursos:
+- [Mapa de archivos (file_map.md)](file_map.md)
+- [API reference](API.md)
+- [Architecture](ARCHITECTURE.md)
 
-### Documentos generales (raíz)
-- [INDEX.md](../INDEX.md)
-- [00_START_HERE.md](../00_START_HERE.md)
-- [ARQUITECTURA_MODULAR.md](../ARQUITECTURA_MODULAR.md)
-- [REORGANIZACION_COMPLETADA.md](../REORGANIZACION_COMPLETADA.md)
-- [AUDITORIA_PROYECTO.md](../AUDITORIA_PROYECTO.md)
-- [ESTRUCTURA_FINAL.md](../ESTRUCTURA_FINAL.md)
+Publicar en GitHub Pages:
+1. En GitHub → Settings → Pages, elige la rama `main` y carpeta `/docs`.
+2. Asegúrate de que `docs/index.md` existe y es la portada.
 
----
-
-## Publicar en GitHub Pages
-Para tener esta documentación como una página web (GitHub Pages) desde la carpeta `docs/`:
-1. Ve a la configuración del repositorio en GitHub -> "Pages".
-2. Selecciona la rama `main` y la carpeta `/docs` como origen.
-3. Guarda; GitHub servirá el contenido de `docs/` en unos minutos.
-
-Sugerencia: Renombrar `docs/ALL_DOCS_SUMMARY.md` a `docs/index.md` para que sea la página de entrada.
-
----
-
-## Notas finales
-- Si quieres, puedo convertir `ALL_DOCS_SUMMARY.md` en `index.md`, generar enlaces más amigables y activar Pages automáticamente (requiere acceso web a GitHub). ¿Lo hago ahora?
+¿Quieres que convierta esto en la home de Pages ahora y genere enlaces con
+badges (status CI, cobertura)? Puedo hacerlo.

@@ -1,3 +1,5 @@
+# Copiado desde test_mt5.py en la raíz
+
 import logging
 
 from trading_phantom.mt5.connector import MT5Connector

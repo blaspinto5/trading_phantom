@@ -116,9 +116,9 @@ def main():
         print("✅ VERIFICACIÓN EXITOSA - TODO ESTÁ CORRECTAMENTE INSTALADO")
         print("🎉 " * 15)
         print("\nAhora puedes ejecutar:")
-        print("  .\RUN.bat")
+        print("  .\\RUN.bat")
         print("o")
-        print("  .\RUN.ps1")
+        print("  .\\RUN.ps1")
         print()
         return 0
     else:
