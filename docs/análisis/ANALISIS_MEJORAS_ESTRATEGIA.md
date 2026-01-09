@@ -311,8 +311,8 @@ Win Rate: ~99%
 
 ---
 
-**Generado:** 2026-01-08 19:20:55 UTC  
-**Status:** ✅ ESTRATEGIA MEJORADA VALIDADA  
-**ROI:** +317.61%  
-**Win Rate:** 98.92%  
+**Generado:** 2026-01-08 19:20:55 UTC
+**Status:** ✅ ESTRATEGIA MEJORADA VALIDADA
+**ROI:** +317.61%
+**Win Rate:** 98.92%
 **Próximo Paso:** Deployar en producción

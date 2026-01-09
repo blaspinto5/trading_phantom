@@ -180,7 +180,7 @@
     document.getElementById('btn-close-project').addEventListener('click', async ()=>{
       const confirmed = confirm('⚠️ Esto cerrará el bot, la base de datos y terminará el proceso.\n\n¿Estás seguro de que deseas continuar?');
       if (!confirmed) return;
-      
+
       try {
         await jsonReq('/api/shutdown', {method: 'POST'});
         document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:var(--bg);color:var(--text);font-family:sans-serif;text-align:center;"><div><h1>Proyecto Cerrado</h1><p>Todos los procesos han sido terminados correctamente.</p><p>Puedes cerrar esta ventana.</p></div></div>';

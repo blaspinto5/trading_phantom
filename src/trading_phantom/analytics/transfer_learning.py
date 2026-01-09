@@ -10,7 +10,8 @@ sea accedido y utilizado por futuras IAs (LSTM, RL, Transformers).
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Optional, Any, List
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -19,119 +20,127 @@ logger = logging.getLogger(__name__)
 class TransferLearningPipeline:
     """
     Gestiona la transferencia de conocimiento entre modelos.
-    
+
     Uso:
         pipeline = TransferLearningPipeline()
-        
+
         # Guardar conocimiento del RF
         pipeline.export_rf_knowledge(rf_model, X_train, y_train, feature_names)
-        
+
         # En el futuro, una IA puede hacer:
         knowledge = pipeline.import_knowledge()
         lstm = MyLSTMWithKnowledge(knowledge)
     """
-    
-    def __init__(self, kb_dir: str = 'data/knowledge_base'):
+
+    def __init__(self, kb_dir: str = "data/knowledge_base"):
         self.kb_dir = Path(kb_dir)
         self.kb_dir.mkdir(parents=True, exist_ok=True)
-    
-    def export_rf_knowledge(self, rf_model, X_train: np.ndarray, y_train: np.ndarray,
-                           X_val: np.ndarray, y_val: np.ndarray,
-                           feature_names: List[str],
-                           class_names: List[str],
-                           trades_history: Optional[List[Dict]] = None) -> Dict:
+
+    def export_rf_knowledge(
+        self,
+        rf_model,
+        X_train: np.ndarray,
+        y_train: np.ndarray,
+        X_val: np.ndarray,
+        y_val: np.ndarray,
+        feature_names: List[str],
+        class_names: List[str],
+        trades_history: Optional[List[Dict]] = None,
+    ) -> Dict:
         """
         Exporta TODO el conocimiento del RandomForest a la Knowledge Base.
-        
+
         Esto es llamado después de entrenar el RF.
         """
         from .knowledge_base import KnowledgeBase
-        
+
         logger.info("📚 Exportando conocimiento del RandomForest...")
         kb = KnowledgeBase(str(self.kb_dir))
-        
+
         # 1. Feature importance
         kb.save_feature_importance(rf_model, feature_names)
-        
+
         # 2. Feature embeddings
         kb.save_feature_embeddings(rf_model, X_train, feature_names)
-        
+
         # 3. Correlation matrix
         kb.save_correlation_matrix(X_train, feature_names)
-        
+
         # 4. Decision patterns
         kb.save_decision_patterns(rf_model, feature_names)
-        
+
         # 5. Performance metrics
         y_pred = rf_model.predict(X_val)
         kb.save_performance_metrics(rf_model, X_val, y_val, y_pred)
-        
+
         # 6. Training data stats
         kb.save_training_data_stats(X_train, y_train, feature_names, class_names)
-        
+
         # 7. Trade patterns (si hay)
         if trades_history:
             kb.save_trade_patterns(trades_history)
-        
+
         # 8. Guardar modelo y escalador
         kb.save_model(rf_model)
-        
+
         logger.info("✅ Conocimiento exportado completamente")
         return kb.get_summary()
-    
+
     def import_knowledge(self) -> Dict[str, Any]:
         """
         Importa TODO el conocimiento guardado.
-        
+
         Las futuras IAs llaman esto para acceder al conocimiento del RF.
         """
         from .knowledge_base import KnowledgeBase
-        
+
         kb = KnowledgeBase(str(self.kb_dir))
-        
+
         knowledge = {
-            'feature_importance': kb.get_feature_importance(),
-            'embeddings': kb.get_feature_embeddings(),
-            'correlation_matrix': kb.get_correlation_matrix(),
-            'decision_patterns': kb.get_decision_patterns(),
-            'performance_metrics': kb.get_performance_metrics(),
-            'model': kb.load_model(),
-            'scaler': kb.load_scaler()
+            "feature_importance": kb.get_feature_importance(),
+            "embeddings": kb.get_feature_embeddings(),
+            "correlation_matrix": kb.get_correlation_matrix(),
+            "decision_patterns": kb.get_decision_patterns(),
+            "performance_metrics": kb.get_performance_metrics(),
+            "model": kb.load_model(),
+            "scaler": kb.load_scaler(),
         }
-        
+
         logger.info("📖 Conocimiento importado correctamente")
         return knowledge
-    
+
     def get_top_features(self, n: int = 5) -> List[str]:
         """Obtiene los N features más importantes"""
         from .knowledge_base import KnowledgeBase
+
         kb = KnowledgeBase(str(self.kb_dir))
         importance = kb.get_feature_importance()
-        
+
         if importance:
-            return importance.get('top_5_features', [])[:n]
+            return importance.get("top_5_features", [])[:n]
         return []
-    
+
     def get_model_confidence(self) -> str:
         """¿Cuán confiable es el conocimiento del RF?"""
         from .knowledge_base import KnowledgeBase
+
         kb = KnowledgeBase(str(self.kb_dir))
         metrics = kb.get_performance_metrics()
-        
+
         if metrics:
-            return metrics.get('model_confidence', 'UNKNOWN')
-        return 'NO_DATA'
-    
+            return metrics.get("model_confidence", "UNKNOWN")
+        return "NO_DATA"
+
     def create_knowledge_transfer_guide(self) -> str:
         """
         Crea un documento guía para futuras IAs.
         Explica qué conocimiento está disponible y cómo usarlo.
         """
         from .knowledge_base import KnowledgeBase
-        
+
         kb = KnowledgeBase(str(self.kb_dir))
         summary = kb.get_summary()
-        
+
         guide = f"""
 # 📚 GUÍA DE TRANSFERENCIA DE CONOCIMIENTO
 ## Trading Phantom v1.1.0
@@ -237,11 +246,11 @@ ensemble_pred = (rf_pred + lstm_pred) / 2
 Documentación generada automáticamente.
 Para más info: ver README.md o ARQUITECTURA_MODULAR.md
 """
-        
-        path = self.kb_dir / 'KNOWLEDGE_TRANSFER_GUIDE.md'
-        with open(path, 'w', encoding='utf-8') as f:
+
+        path = self.kb_dir / "KNOWLEDGE_TRANSFER_GUIDE.md"
+        with open(path, "w", encoding="utf-8") as f:
             f.write(guide)
-        
+
         logger.info(f"📖 Guía de transferencia creada: {path}")
         return guide
 
@@ -250,18 +259,33 @@ Para más info: ver README.md o ARQUITECTURA_MODULAR.md
 # FUNCIONES HELPER PARA SCRIPTS
 # ============================================================
 
-def quick_export_knowledge(rf_model, X_train, y_train, X_val, y_val, 
-                          feature_names, class_names, trades_history=None):
+
+def quick_export_knowledge(
+    rf_model,
+    X_train,
+    y_train,
+    X_val,
+    y_val,
+    feature_names,
+    class_names,
+    trades_history=None,
+):
     """
     Helper para exportar conocimiento rápidamente.
-    
+
     Uso en ml_train.py:
         pipeline = quick_export_knowledge(...)
     """
     pipeline = TransferLearningPipeline()
     summary = pipeline.export_rf_knowledge(
-        rf_model, X_train, y_train, X_val, y_val,
-        feature_names, class_names, trades_history
+        rf_model,
+        X_train,
+        y_train,
+        X_val,
+        y_val,
+        feature_names,
+        class_names,
+        trades_history,
     )
     return pipeline
 
@@ -269,7 +293,7 @@ def quick_export_knowledge(rf_model, X_train, y_train, X_val, y_val,
 def quick_import_knowledge():
     """
     Helper para importar conocimiento rápidamente.
-    
+
     Uso en futuro IA:
         knowledge = quick_import_knowledge()
         lstm = MyLSTM(knowledge)

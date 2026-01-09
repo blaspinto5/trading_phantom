@@ -30,7 +30,7 @@
    Commit 1 (5e45638): Bot ejecutándose en vivo con estrategias mejoradas
    Commit 2 (ec66617): Bot Monitor y Dashboard en Vivo
    Commit 3 (4f4a4f4): Quick Start Guide para Bot en Vivo
-   
+
    ✅ Todos pusheados a GitHub
    ```
 

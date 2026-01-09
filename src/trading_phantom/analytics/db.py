@@ -1,15 +1,15 @@
 import os
 from datetime import datetime
 
-from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime, JSON
+from sqlalchemy import (JSON, Column, DateTime, Float, Integer, String,
+                        create_engine)
 from sqlalchemy.orm import declarative_base, sessionmaker
-
 
 Base = declarative_base()
 
 
 class Trade(Base):
-    __tablename__ = 'trades'
+    __tablename__ = "trades"
     id = Column(Integer, primary_key=True, autoincrement=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
     ticket = Column(Integer, index=True, nullable=True)
@@ -26,7 +26,7 @@ class Trade(Base):
 
 
 class BacktestRun(Base):
-    __tablename__ = 'backtest_runs'
+    __tablename__ = "backtest_runs"
     id = Column(Integer, primary_key=True, autoincrement=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     symbol = Column(String(50))
@@ -43,10 +43,12 @@ SessionLocal = None
 
 def get_database_url() -> str:
     # Prefer env var DATABASE_URL; fallback to local SQLite
-    url = os.getenv('DATABASE_URL')
+    url = os.getenv("DATABASE_URL")
     if url:
         return url
-    data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'data'))
+    data_dir = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "..", "data")
+    )
     os.makedirs(data_dir, exist_ok=True)
     return f"sqlite:///{os.path.join(data_dir, 'trading_phantom.db')}"
 

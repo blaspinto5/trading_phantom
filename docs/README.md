@@ -22,6 +22,8 @@ Esta guía amplía y especifica la documentación del proyecto, alineada a la nu
 ## Introducción
 Trading Phantom es una plataforma de trading algorítmico en Python orientada a MetaTrader 5 (MT5). Provee UI (Flask + pywebview), API para control del bot, backtesting numérico y visual, y herramientas de empaquetado.
 
+> Nota de ejecución: este repositorio usa el layout `src/` como canonical. Para ejecutar localmente asegúrate de ejecutar desde la raíz del repositorio y con `PYTHONPATH=src` o usando el módulo: `python -m trading_phantom.main`. Esto evita importar la copia legacy que se conservó en `archive/`.
+
 ## Estructura del repositorio
 
 ```
@@ -210,3 +212,37 @@ Roadmap sugerido:
 - Añadir `console_scripts` en `pyproject.toml` para `trading-phantom`.
 - Desacoplar `webapp` en `server/` y añadir auth básica.
 - Extender estrategia y soporte de símbolos/timeframes.
+
+---
+
+## Archivos archivados
+
+He consolidado la documentación antigua en `docs/archived_md/` y la he organizado en subcarpetas para facilitar navegación:
+
+- **Guias:** [docs/archived_md/guias](docs/archived_md/guias)
+	- [00_START_HERE.md](docs/archived_md/guias/00_START_HERE.md)
+	- [BOT_EJECUCION_EN_VIVO.md](docs/archived_md/guias/BOT_EJECUCION_EN_VIVO.md)
+	- [CHECKLIST_FINAL.md](docs/archived_md/guias/CHECKLIST_FINAL.md)
+	- [CAMBIOS_REALIZADOS.md](docs/archived_md/guias/CAMBIOS_REALIZADOS.md)
+	- [AUDITORIA_PROYECTO.md](docs/archived_md/guias/AUDITORIA_PROYECTO.md)
+	- [AUDITORIA_DETALLADA.md](docs/archived_md/guias/AUDITORIA_DETALLADA.md)
+	- [AUDITORIA_CORPORATIVA.md](docs/archived_md/guias/AUDITORIA_CORPORATIVA.md)
+	- [ARQUITECTURA_MODULAR.md](docs/archived_md/guias/ARQUITECTURA_MODULAR.md)
+	- [QUICK_START_NEW_FEATURES.md](docs/archived_md/guias/QUICK_START_NEW_FEATURES.md)
+	- [MATRIZ_ARCHIVOS.md](docs/archived_md/guias/MATRIZ_ARCHIVOS.md)
+	- [ESTRUCTURA_FINAL.md](docs/archived_md/guias/ESTRUCTURA_FINAL.md)
+	- [COMO_VER_RESULTADOS.md](docs/archived_md/guias/COMO_VER_RESULTADOS.md)
+
+- **Análisis:** [docs/archived_md/analisis](docs/archived_md/analisis)
+	- [ANALISIS_ENTRENAMIENTO_MEJORADO.md](docs/archived_md/analisis/ANALISIS_ENTRENAMIENTO_MEJORADO.md)
+	- [INDEX_BACKTEST_MEJORAS.md](docs/archived_md/analisis/INDEX_BACKTEST_MEJORAS.md)
+	- [INDEX_ENTRENAMIENTO.md](docs/archived_md/analisis/INDEX_ENTRENAMIENTO.md)
+
+- **Resúmenes:** [docs/archived_md/resumenes](docs/archived_md/resumenes)
+	- [RESUMEN_FINAL.md](docs/archived_md/resumenes/RESUMEN_FINAL.md)
+	- [RESUMEN_ENTRENAMIENTO_SEGUNDA_ITERACION.md](docs/archived_md/resumenes/RESUMEN_ENTRENAMIENTO_SEGUNDA_ITERACION.md)
+	- [INDICE_EJECUTIVO.md](docs/archived_md/resumenes/INDICE_EJECUTIVO.md)
+	- [REORGANIZACION_COMPLETADA.md](docs/archived_md/resumenes/REORGANIZACION_COMPLETADA.md)
+	- [INICIO_CORPORATIVO.md](docs/archived_md/resumenes/INICIO_CORPORATIVO.md)
+
+Si quieres que reubique más archivos (por ejemplo `trading_phantom/*.md`) dentro de estas carpetas, lo hago ahora.

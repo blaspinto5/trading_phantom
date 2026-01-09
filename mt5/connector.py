@@ -14,6 +14,7 @@ class MT5Connector:
 
     Methods return native MT5 structures or pandas DataFrames for rates.
     """
+
     def __init__(self) -> None:
         self.connected: bool = False
 
@@ -32,7 +33,11 @@ class MT5Connector:
             try:
                 initialized = mt5.initialize()
             except Exception as e:
-                logger.warning("MT5.initialize() raised exception on attempt %s: %s", attempt + 1, e)
+                logger.warning(
+                    "MT5.initialize() raised exception on attempt %s: %s",
+                    attempt + 1,
+                    e,
+                )
                 initialized = False
 
             if initialized:
@@ -46,7 +51,12 @@ class MT5Connector:
                 last_err = mt5.last_error()
             except Exception:
                 last_err = None
-            logger.warning("⚠️ MT5 initialize failed (attempt %s/%s): %s", attempt + 1, max_retries, last_err)
+            logger.warning(
+                "⚠️ MT5 initialize failed (attempt %s/%s): %s",
+                attempt + 1,
+                max_retries,
+                last_err,
+            )
             attempt += 1
             time.sleep(backoff_factor * (2 ** (attempt - 1)))
 
@@ -83,7 +93,14 @@ class MT5Connector:
     # -----------------------------
     # DATOS DE MERCADO
     # -----------------------------
-    def get_rates(self, symbol: str, timeframe, bars: int, max_retries: int = 3, backoff_factor: float = 0.5) -> Optional[list]:
+    def get_rates(
+        self,
+        symbol: str,
+        timeframe,
+        bars: int,
+        max_retries: int = 3,
+        backoff_factor: float = 0.5,
+    ) -> Optional[list]:
         """Return raw rates array from MT5 for the given symbol/timeframe/bars with retry/backoff."""
         resolved = self.resolve_symbol(symbol)
         if resolved is None:
@@ -95,17 +112,28 @@ class MT5Connector:
             try:
                 rates = mt5.copy_rates_from_pos(resolved, timeframe, 0, bars)
             except Exception as e:
-                logger.warning("⚠️ mt5.copy_rates_from_pos raised on attempt %s: %s", attempt + 1, e)
+                logger.warning(
+                    "⚠️ mt5.copy_rates_from_pos raised on attempt %s: %s", attempt + 1, e
+                )
                 rates = None
 
             if rates is not None and len(rates) > 0:
                 return rates
 
-            logger.warning("⚠️ No se pudieron obtener datos para %s (attempt %s/%s)", resolved, attempt + 1, max_retries)
+            logger.warning(
+                "⚠️ No se pudieron obtener datos para %s (attempt %s/%s)",
+                resolved,
+                attempt + 1,
+                max_retries,
+            )
             attempt += 1
             time.sleep(backoff_factor * (2 ** (attempt - 1)))
 
-        logger.error("❌ No se pudieron obtener datos para %s tras %s intentos", resolved, max_retries)
+        logger.error(
+            "❌ No se pudieron obtener datos para %s tras %s intentos",
+            resolved,
+            max_retries,
+        )
         return None
 
     def get_rates_df(self, symbol: str, timeframe, bars: int) -> Optional[pd.DataFrame]:
@@ -143,7 +171,7 @@ class MT5Connector:
             "symbol": resolved,
             "bid": tick.bid,
             "ask": tick.ask,
-            "time": datetime.fromtimestamp(tick.time)
+            "time": datetime.fromtimestamp(tick.time),
         }
 
     # -----------------------------
@@ -165,7 +193,7 @@ class MT5Connector:
         volume: float,
         sl: float = None,
         tp: float = None,
-        deviation: int = 50
+        deviation: int = 50,
     ) -> Any:
         """Send a pending order (BUY/SELL) and return MT5 response."""
         resolved = self.resolve_symbol(symbol)

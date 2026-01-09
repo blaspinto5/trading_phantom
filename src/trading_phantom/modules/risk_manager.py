@@ -6,11 +6,13 @@ import MetaTrader5 as mt5
 
 class RiskManager:
     """Comprueba si un trade puede ejecutarse y calcula lotajes y SL/TP seguros."""
+
     def __init__(self, config: dict, mt5_connector: Any) -> None:
         self.config: dict = config
         self.mt5: Any = mt5_connector
         self.daily_loss: float = 0.0
         self.last_reset: date = date.today()
+
     # =========================
     # RESET DIARIO
     # =========================
@@ -122,13 +124,7 @@ class RiskManager:
         if lot <= 0:
             return {"allowed": False, "reason": "LOT_ERROR"}
 
-        return {
-            "allowed": True,
-            "signal": signal,
-            "volume": lot,
-            "sl": sl,
-            "tp": tp
-        }
+        return {"allowed": True, "signal": signal, "volume": lot, "sl": sl, "tp": tp}
 
     # =========================
     # ACTUALIZAR PÉRDIDA

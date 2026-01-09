@@ -3,6 +3,7 @@ from pathlib import Path
 
 LOG_FILE = Path(__file__).resolve().parent / "trades.csv"
 
+
 def log_trade(data: dict):
     file_exists = LOG_FILE.exists()
 

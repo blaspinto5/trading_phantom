@@ -42,7 +42,7 @@ ml:
   enabled: true             # 🚀 ACTIVADO: Usando modelo avanzado (95% accuracy)
   confidence_threshold: 0.55 # umbral mínimo para aceptar la señal ML (55%)
   model_path: "src/data/models/advanced_model.pkl"
-  
+
 # =========================
 # RIESGO MEJORADO
 # =========================

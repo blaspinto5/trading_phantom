@@ -2,9 +2,9 @@
 
 ## ✅ ESTADO: BOT ACTIVO EN METATRADER 5
 
-**Fecha:** 8 de Enero de 2026  
-**Hora Inicio:** 19:25:47 UTC  
-**Plataforma:** MetaTrader 5 (Modo DEMO)  
+**Fecha:** 8 de Enero de 2026
+**Hora Inicio:** 19:25:47 UTC
+**Plataforma:** MetaTrader 5 (Modo DEMO)
 **Estado:** ✅ **EJECUTÁNDOSE EN VIVO**
 
 ---
@@ -333,6 +333,6 @@ Semanalmente revisar:
 
 ---
 
-**Generado:** 2026-01-08 19:25 UTC  
-**Última actualización:** 2026-01-08 19:30 UTC  
+**Generado:** 2026-01-08 19:25 UTC
+**Última actualización:** 2026-01-08 19:30 UTC
 **Estado:** BOT EJECUTÁNDOSE EN VIVO ✅

@@ -7,7 +7,10 @@ class BacktestSimulator:
 
     Nota: es un simulador didáctico, no reproduce todas las complejidades reales.
     """
-    def __init__(self, rates: list, strategy: Any, sl_pips: int = 20, tp_pips: int = 40) -> None:
+
+    def __init__(
+        self, rates: list, strategy: Any, sl_pips: int = 20, tp_pips: int = 40
+    ) -> None:
         self.rates: list = rates
         self.strategy: Any = strategy
         self.sl_pips: int = sl_pips
@@ -21,7 +24,9 @@ class BacktestSimulator:
         # Detectar cuántas velas necesita la estrategia
         min_bars = 50  # Valor por defecto si no se define
 
-        if hasattr(self.strategy, "sma_period") and hasattr(self.strategy, "rsi_period"):
+        if hasattr(self.strategy, "sma_period") and hasattr(
+            self.strategy, "rsi_period"
+        ):
             min_bars = max(self.strategy.sma_period, self.strategy.rsi_period) + 2
         elif hasattr(self.strategy, "slow") and hasattr(self.strategy, "fast"):
             min_bars = max(self.strategy.slow, self.strategy.fast) + 2
@@ -37,7 +42,7 @@ class BacktestSimulator:
             }
 
             # Mock dinámico de datos históricos para la estrategia
-            self.strategy.get_data = lambda bars=i+1: self._mock_df(i+1)
+            self.strategy.get_data = lambda bars=i + 1: self._mock_df(i + 1)
 
             signal = self.strategy.generate_signal()
 
@@ -45,9 +50,12 @@ class BacktestSimulator:
                 if signal == "HOLD":
                     continue
 
-                if (position["type"] == "BUY" and signal == "SELL") or \
-                   (position["type"] == "SELL" and signal == "BUY"):
-                    position["exit_price"] = price["bid"] if position["type"] == "BUY" else price["ask"]
+                if (position["type"] == "BUY" and signal == "SELL") or (
+                    position["type"] == "SELL" and signal == "BUY"
+                ):
+                    position["exit_price"] = (
+                        price["bid"] if position["type"] == "BUY" else price["ask"]
+                    )
                     position["exit_time"] = current_time
                     position["pnl"] = self._calc_pnl(position)
                     self.trades.append(position)

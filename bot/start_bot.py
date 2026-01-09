@@ -4,12 +4,12 @@ Launcher Script - Inicia Trading Phantom con las nuevas estrategias
 Ejecuta el bot en background y proporciona monitoreo
 """
 
+import os
 import subprocess
 import sys
-from pathlib import Path
 import time
 from datetime import datetime
-import os
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.absolute()
 os.chdir(PROJECT_ROOT)
@@ -46,7 +46,8 @@ print()
 print("🔌 Verificando conexión a MetaTrader...")
 try:
     import mt5
-    if hasattr(mt5, 'initialize'):
+
+    if hasattr(mt5, "initialize"):
         print("✅ MT5: DISPONIBLE")
     else:
         print("⚠️  MT5: Requiere inicialización")
@@ -78,14 +79,14 @@ try:
         stderr=subprocess.STDOUT,
         text=True,
         bufsize=1,
-        universal_newlines=True
+        universal_newlines=True,
     )
-    
+
     print(f"✅ Proceso iniciado (PID: {process.pid})")
     print()
     print("📡 Salida del bot:")
     print("-" * 80)
-    
+
     # Mostrar las primeras líneas de output
     start_time = time.time()
     line_count = 0
@@ -93,14 +94,14 @@ try:
         if line.strip():
             print(line.rstrip())
             line_count += 1
-            
+
             # Mostrar primeras 30 líneas, luego cambiar a resumen
             if line_count > 30:
                 print("\n💡 Bot ejecutándose en background...")
                 print("   Para monitorear en tiempo real: python bot_monitor.py")
                 print("   Para ver logs: cat bot_execution_*.log")
                 break
-    
+
     print()
     print("=" * 80)
     print("✅ BOT EJECUTÁNDOSE EN VIVO")
@@ -115,10 +116,10 @@ try:
     print("⏳ El bot continuará ejecutándose...")
     print("   (Presiona Ctrl+C para detener)")
     print()
-    
+
     # Mantener el proceso corriendo
     process.wait()
-    
+
 except KeyboardInterrupt:
     print("\n\n⏹️  Deteniendo bot...")
     process.terminate()
@@ -126,7 +127,7 @@ except KeyboardInterrupt:
     if process.poll() is None:
         process.kill()
     print("✅ Bot detenido")
-    
+
 except Exception as e:
     print(f"❌ Error: {e}")
     sys.exit(1)

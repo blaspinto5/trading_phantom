@@ -1,8 +1,8 @@
-import logging
 import json
+import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class TradeHistory:
         """Carga el historial desde archivo."""
         if self.history_file.exists():
             try:
-                with open(self.history_file, 'r') as f:
+                with open(self.history_file, "r") as f:
                     return json.load(f)
             except Exception as e:
                 logger.error(f"Error cargando historial: {e}")
@@ -29,13 +29,21 @@ class TradeHistory:
     def _save_history(self) -> None:
         """Guarda el historial en archivo."""
         try:
-            with open(self.history_file, 'w') as f:
+            with open(self.history_file, "w") as f:
                 json.dump(self.trades, f, indent=2)
         except Exception as e:
             logger.error(f"Error guardando historial: {e}")
 
-    def add_trade(self, ticket: int, symbol: str, signal: str, volume: float, 
-                  entry_price: float, sl: float, tp: float) -> None:
+    def add_trade(
+        self,
+        ticket: int,
+        symbol: str,
+        signal: str,
+        volume: float,
+        entry_price: float,
+        sl: float,
+        tp: float,
+    ) -> None:
         """Registra una operación de entrada."""
         trade = {
             "ticket": ticket,
@@ -50,11 +58,13 @@ class TradeHistory:
             "exit_time": None,
             "exit_price": None,
             "profit_loss": None,
-            "status": "OPEN"
+            "status": "OPEN",
         }
         self.trades.append(trade)
         self._save_history()
-        logger.info(f"📝 Trade abierto: {signal} | Ticket: {ticket} | Precio: {entry_price}")
+        logger.info(
+            f"📝 Trade abierto: {signal} | Ticket: {ticket} | Precio: {entry_price}"
+        )
 
     def close_trade(self, ticket: int, exit_price: float, profit_loss: float) -> None:
         """Cierra una operación registrando salida y P/L."""
@@ -65,7 +75,9 @@ class TradeHistory:
                 trade["profit_loss"] = profit_loss
                 trade["status"] = "CLOSED"
                 self._save_history()
-                logger.info(f"🔒 Trade cerrado: Ticket {ticket} | P/L: ${profit_loss:.2f}")
+                logger.info(
+                    f"🔒 Trade cerrado: Ticket {ticket} | P/L: ${profit_loss:.2f}"
+                )
                 return
         logger.warning(f"⚠️ No se encontró trade con ticket {ticket}")
 
@@ -85,10 +97,12 @@ class TradeHistory:
                 "total_loss": 0,
                 "net_profit": 0,
                 "best_trade": None,
-                "worst_trade": None
+                "worst_trade": None,
             }
 
-        profits = [t["profit_loss"] for t in closed_trades if t["profit_loss"] is not None]
+        profits = [
+            t["profit_loss"] for t in closed_trades if t["profit_loss"] is not None
+        ]
         won = sum(1 for p in profits if p > 0)
         lost = sum(1 for p in profits if p < 0)
         total_profit = sum(p for p in profits if p > 0)
@@ -105,13 +119,13 @@ class TradeHistory:
             "total_loss": round(total_loss, 2),
             "net_profit": round(net_profit, 2),
             "best_trade": max(profits) if profits else None,
-            "worst_trade": min(profits) if profits else None
+            "worst_trade": min(profits) if profits else None,
         }
 
     def print_summary(self) -> None:
         """Imprime un resumen formateado en los logs."""
         summary = self.get_summary()
-        
+
         logger.info("=" * 60)
         logger.info("📊 RESUMEN DE OPERACIONES")
         logger.info("=" * 60)
@@ -123,9 +137,9 @@ class TradeHistory:
         logger.info(f"💰 Ganancia total: ${summary['total_profit']:.2f}")
         logger.info(f"💸 Pérdida total: ${summary['total_loss']:.2f}")
         logger.info(f"🎯 PROFIT NETO: ${summary['net_profit']:.2f}")
-        if summary['best_trade']:
+        if summary["best_trade"]:
             logger.info(f"🚀 Mejor trade: ${summary['best_trade']:.2f}")
-        if summary['worst_trade']:
+        if summary["worst_trade"]:
             logger.info(f"📉 Peor trade: ${summary['worst_trade']:.2f}")
         logger.info("=" * 60)
 

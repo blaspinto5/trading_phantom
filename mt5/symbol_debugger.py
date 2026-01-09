@@ -4,7 +4,7 @@ import MetaTrader5 as mt5
 
 logger = logging.getLogger(__name__)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     mt5.initialize()
 
     symbol = "EURUSD"

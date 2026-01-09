@@ -40,12 +40,12 @@ trader = Trader(mt5_conn, risk_manager)
 while iterations not reached:
     price = mt5_conn.get_price(symbol)
     rates = mt5_conn.get_rates(symbol, timeframe, 1)
-    
+
     if new_candle:
         signal = strategy.generate_signal()
         if signal != "HOLD":
             trader.execute(signal, price)
-    
+
     sleep(loop_interval)
 ```
 

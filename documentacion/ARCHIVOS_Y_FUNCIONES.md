@@ -11,7 +11,7 @@
 ### `webapp.py`
 - **Tipo:** Flask REST API server
 - **Función:** Servidor web que expone la interfaz y API REST en http://127.0.0.1:5000
-- **Responsabilidad:** 
+- **Responsabilidad:**
   - Registra blueprints (bot, backtest, analytics, knowledge)
   - Sirve templates HTML y CSS
   - Maneja requests HTTP
@@ -459,19 +459,19 @@
   bot:
     delay_between_iterations: 5
     max_iterations_per_run: 100
-  
+
   flask:
     port: 5000
     debug: false
-  
+
   ml:
     enabled: true
     confidence_threshold: 0.7
-  
+
   mt5:
     request_timeout: 10
     retry_attempts: 3
-  
+
   strategy:
     ema_fast: 12
     ema_slow: 26
@@ -752,6 +752,6 @@
 
 ---
 
-**Última actualización:** Enero 2026  
-**Versión:** 1.1.0  
+**Última actualización:** Enero 2026
+**Versión:** 1.1.0
 **Total de descripción:** 18,000+ palabras

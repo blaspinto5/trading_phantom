@@ -6,9 +6,9 @@ Safe parallel execution - No interfiere con bot
 
 import subprocess
 import sys
-from pathlib import Path
-from datetime import datetime
 import time
+from datetime import datetime
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.absolute()
 
@@ -23,9 +23,7 @@ print()
 # 1. Verificar que main.py está en ejecución
 try:
     result = subprocess.run(
-        ["tasklist", "/FI", "IMAGENAME eq python.exe"],
-        capture_output=True,
-        text=True
+        ["tasklist", "/FI", "IMAGENAME eq python.exe"], capture_output=True, text=True
     )
     if "python.exe" in result.stdout:
         print("  ✅ Bot (main.py) detectado en ejecución")
@@ -87,10 +85,7 @@ elif choice == "1":
     print("🚀 Ejecutando: Backtest Advanced Model")
     print("-" * 80)
     try:
-        subprocess.run(
-            [sys.executable, "backtest_advanced_model.py"],
-            cwd=PROJECT_ROOT
-        )
+        subprocess.run([sys.executable, "backtest_advanced_model.py"], cwd=PROJECT_ROOT)
     except KeyboardInterrupt:
         print("\n⏹️  Backtesting cancelado por usuario")
 
@@ -99,8 +94,7 @@ elif choice == "2":
     print("-" * 80)
     try:
         subprocess.run(
-            [sys.executable, "backtest_improved_strategy.py"],
-            cwd=PROJECT_ROOT
+            [sys.executable, "backtest_improved_strategy.py"], cwd=PROJECT_ROOT
         )
     except KeyboardInterrupt:
         print("\n⏹️  Backtesting cancelado por usuario")
@@ -109,31 +103,31 @@ elif choice == "3":
     print("🚀 Ejecutando ambos backtests EN PARALELO")
     print("-" * 80)
     print()
-    
+
     # Crear dos procesos
     print("Iniciando Backtest Advanced Model...")
     proc1 = subprocess.Popen(
         [sys.executable, "backtest_advanced_model.py"],
         cwd=PROJECT_ROOT,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
     )
-    
+
     print("Iniciando Backtest Improved Strategy...")
     proc2 = subprocess.Popen(
         [sys.executable, "backtest_improved_strategy.py"],
         cwd=PROJECT_ROOT,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
     )
-    
+
     print()
     print("⏳ Ambos backtests ejecutándose en paralelo...")
     print()
-    
+
     # Esperar a que terminen
     start = time.time()
-    
+
     while proc1.poll() is None or proc2.poll() is None:
         elapsed = time.time() - start
         if int(elapsed) % 5 == 0:
@@ -141,31 +135,31 @@ elif choice == "3":
             status2 = "En ejecución" if proc2.poll() is None else "Completado"
             print(f"[{int(elapsed)}s] Backtest 1: {status1} | Backtest 2: {status2}")
         time.sleep(0.5)
-    
+
     elapsed = time.time() - start
-    
+
     print()
     print("=" * 80)
     print(f"✅ Ambos backtests completados en {elapsed:.1f}s")
     print("=" * 80)
-    
+
     # Mostrar resultados
     print()
     print("📊 RESULTADOS:")
     print()
-    
+
     # Backtest 1
     results1 = PROJECT_ROOT / "backtest_results_advanced.json"
     if results1.exists():
         print("✅ Backtest Advanced Model:")
         print(f"   Archivo: {results1}")
-    
+
     # Backtest 2
     results2 = PROJECT_ROOT / "backtest_results_improved_strategy.json"
     if results2.exists():
         print("✅ Backtest Improved Strategy:")
         print(f"   Archivo: {results2}")
-    
+
     print()
 
 elif choice == "4":
@@ -174,7 +168,7 @@ elif choice == "4":
     try:
         subprocess.run(
             [sys.executable, "scripts/ml_train_advanced.py", "--no-save"],
-            cwd=PROJECT_ROOT
+            cwd=PROJECT_ROOT,
         )
     except KeyboardInterrupt:
         print("\n⏹️  Validación cancelada por usuario")

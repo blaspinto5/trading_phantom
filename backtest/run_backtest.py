@@ -8,11 +8,14 @@ import MetaTrader5 as mt5
 
 logger = logging.getLogger(__name__)
 
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+root = Path(__file__).resolve().parent.parent
+src = root / "src"
+# Prefer canonical package in src/
+if str(src) not in sys.path:
+    sys.path.insert(0, str(src))
 
 from trading_phantom.backtest.metrics import calculate_metrics
 from trading_phantom.backtest.simulation import BacktestSimulator
-
 # Luego ya puedes hacer:
 from trading_phantom.modules.strategy import Strategy
 from trading_phantom.mt5.connector import MT5Connector
@@ -43,6 +46,7 @@ def run_backtest(symbol="EURUSD-T", timeframe=mt5.TIMEFRAME_H1, bars=1000):
         logger.info("%s: %s", key, value)
 
     connector.shutdown()
+
 
 if __name__ == "__main__":
     run_backtest()

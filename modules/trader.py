@@ -6,6 +6,7 @@ logger = logging.getLogger(__name__)
 
 class Trader:
     """Encapsula la lógica de ejecución de órdenes con validación de riesgo."""
+
     def __init__(self, mt5_connector: Any, risk_manager: Any) -> None:
         self.mt5 = mt5_connector
         self.risk = risk_manager
@@ -19,12 +20,15 @@ class Trader:
         check = self.risk.check(signal, price)
 
         if not check["allowed"]:
-            logger.info("⛔ Trade bloqueado: %s", check.get('reason'))
+            logger.info("⛔ Trade bloqueado: %s", check.get("reason"))
             return None
 
         logger.info(
             "🚀 Ejecutando %s | Lote: %s | SL: %s | TP: %s",
-            check['signal'], check['volume'], check['sl'], check['tp']
+            check["signal"],
+            check["volume"],
+            check["sl"],
+            check["tp"],
         )
 
         result = self.mt5.send_order(
@@ -33,30 +37,30 @@ class Trader:
             volume=check["volume"],
             sl=check["sl"],
             tp=check["tp"],
-            deviation=self.risk.config["orders"]["deviation"]
+            deviation=self.risk.config["orders"]["deviation"],
         )
 
         if result is None:
             logger.error("❌ Error enviando orden")
             return None
 
-        if getattr(result, 'retcode', None) != 10009:  # TRADE_RETCODE_DONE
-            logger.error("❌ Orden rechazada: %s", getattr(result, 'retcode', None))
+        if getattr(result, "retcode", None) != 10009:  # TRADE_RETCODE_DONE
+            logger.error("❌ Orden rechazada: %s", getattr(result, "retcode", None))
             return None
 
-        ticket = getattr(result, 'order', None)
+        ticket = getattr(result, "order", None)
         logger.info("✅ Orden ejecutada correctamente | Ticket: %s", ticket)
-        
+
         # Retornar diccionario con detalles del trade
         return {
             "ticket": ticket,
             "signal": signal,
             "symbol": price["symbol"],
-            "volume": check['volume'],
-            "entry_price": price['bid'] if signal == "SELL" else price['ask'],
-            "sl": check['sl'],
-            "tp": check['tp'],
-            "result": result
+            "volume": check["volume"],
+            "entry_price": price["bid"] if signal == "SELL" else price["ask"],
+            "sl": check["sl"],
+            "tp": check["tp"],
+            "result": result,
         }
 
     # =========================
@@ -71,10 +75,12 @@ class Trader:
 
         for pos in positions:
             result = self.mt5.close_position(pos)
-            if result and getattr(result, 'retcode', None) == 10009:
-                logger.info("🔒 Posición %s cerrada", getattr(pos, 'ticket', None))
+            if result and getattr(result, "retcode", None) == 10009:
+                logger.info("🔒 Posición %s cerrada", getattr(pos, "ticket", None))
             else:
-                logger.error("❌ Error cerrando posición %s", getattr(pos, 'ticket', None))
+                logger.error(
+                    "❌ Error cerrando posición %s", getattr(pos, "ticket", None)
+                )
 
     # =========================
     # ACTUALIZAR PÉRDIDA DIARIA

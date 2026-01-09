@@ -1,7 +1,7 @@
 # 📖 MANUAL OPERATIVO - TRADING PHANTOM
 
-**Versión:** 2.0  
-**Última actualización:** 2026-01-08  
+**Versión:** 2.0
+**Última actualización:** 2026-01-08
 **Estado:** ✅ Operativo
 
 ---

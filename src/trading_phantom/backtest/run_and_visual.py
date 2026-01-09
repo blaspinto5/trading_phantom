@@ -12,9 +12,14 @@ from trading_phantom.mt5.connector import MT5Connector
 logger = logging.getLogger(__name__)
 
 
-def run_backtest_and_visual(symbol: str = "EURUSD-T", timeframe=mt5.TIMEFRAME_H1, bars: int = 1000,
-                            sma_period: int = 50, rsi_period: int = 14,
-                            run_plot: bool = True):
+def run_backtest_and_visual(
+    symbol: str = "EURUSD-T",
+    timeframe=mt5.TIMEFRAME_H1,
+    bars: int = 1000,
+    sma_period: int = 50,
+    rsi_period: int = 14,
+    run_plot: bool = True,
+):
     """Ejecuta el backtest numérico (simulador) y, a continuación, un backtest visual
 
     Ambos usan los mismos datos y parámetros de estrategia para asegurar consistencia.
@@ -33,7 +38,9 @@ def run_backtest_and_visual(symbol: str = "EURUSD-T", timeframe=mt5.TIMEFRAME_H1
     # 1) Backtest numérico (simulador)
     from trading_phantom.modules.strategy import Strategy
 
-    strategy = Strategy(symbol, timeframe, None, sma_period=sma_period, rsi_period=rsi_period)
+    strategy = Strategy(
+        symbol, timeframe, None, sma_period=sma_period, rsi_period=rsi_period
+    )
     simulator = BacktestSimulator(rates, strategy, sl_pips=20, tp_pips=40)
     trades = simulator.run()
     metrics = calculate_metrics(trades)
@@ -45,16 +52,18 @@ def run_backtest_and_visual(symbol: str = "EURUSD-T", timeframe=mt5.TIMEFRAME_H1
     if df is None:
         logger.error("No se pudo construir DataFrame para visual backtest")
         connector.shutdown()
-        return {'metrics': metrics}
+        return {"metrics": metrics}
 
-    visual_results = run_visual_backtest(df, sma_period=sma_period, rsi_period=rsi_period, plot=run_plot)
+    visual_results = run_visual_backtest(
+        df, sma_period=sma_period, rsi_period=rsi_period, plot=run_plot
+    )
 
     connector.shutdown()
 
-    return {'metrics': metrics, 'visual_results': visual_results}
+    return {"metrics": metrics, "visual_results": visual_results}
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     out = run_backtest_and_visual(run_plot=True)
     logger.info("Backtest output: %s", out)

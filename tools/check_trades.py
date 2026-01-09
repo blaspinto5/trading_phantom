@@ -4,9 +4,9 @@ Verificar estado actual del bot y trades ejecutados
 """
 
 import sqlite3
+import sys
 from datetime import datetime
 from pathlib import Path
-import sys
 
 db_path = "src/data/trading_phantom.db"
 
@@ -24,11 +24,13 @@ print("=" * 80)
 print()
 
 # Obtener últimos trades
-cursor.execute("""
-    SELECT * FROM trades 
-    ORDER BY entry_time DESC 
+cursor.execute(
+    """
+    SELECT * FROM trades
+    ORDER BY entry_time DESC
     LIMIT 10
-""")
+"""
+)
 
 trades = list(cursor.fetchall())
 print(f"✅ Total trades en BD: {len(trades)}")
@@ -42,7 +44,7 @@ if trades:
         entry_time = trade["entry_time"] if "entry_time" in trade.keys() else "N/A"
         pnl = trade["pnl"] if "pnl" in trade.keys() else 0
         status = "✅" if pnl > 0 else "❌" if pnl < 0 else "➡️"
-        
+
         print(f"{i}. {symbol} | P&L: ${pnl:>8.2f} {status} | {entry_time}")
     print()
 else:

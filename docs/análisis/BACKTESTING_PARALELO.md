@@ -159,20 +159,20 @@ from datetime import datetime
 
 while True:
     print(f"[{datetime.now()}] Iniciando backtesting...")
-    
+
     # Ejecutar backtest en background
     proc = subprocess.Popen(
         ["python", "backtest_advanced_model.py"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
-    
+
     # Esperar que termine
     proc.wait()
-    
+
     # Dormir X minutos antes de siguiente
     time.sleep(3600)  # 1 hora
-    
+
     print(f"[{datetime.now()}] Backtesting completado")
 ```
 

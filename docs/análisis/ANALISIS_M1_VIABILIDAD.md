@@ -201,7 +201,7 @@ RESULTADO COMBINADO:
 
 ## 🎓 LECCIONES DE TRADING
 
-1. **No cambies ganadoras** 
+1. **No cambies ganadoras**
    - H1 está probado y ganando
    - Cambiar es riesgoso
 

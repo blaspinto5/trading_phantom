@@ -1,6 +1,6 @@
 $ErrorActionPreference = 'Stop'
 $uri = 'http://127.0.0.1:5000/api/backtest'
-$body = '{}' 
+$body = '{}'
 $job = Invoke-RestMethod -Uri $uri -Method POST -Body $body -ContentType 'application/json' -TimeoutSec 30
 Write-Output "Job: $($job.job_id)"
 $id = $job.job_id

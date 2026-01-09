@@ -42,13 +42,13 @@
 
 **Trading Phantom** es una **plataforma modular de trading algorítmico** construida en Python, diseñada para operar en **MetaTrader 5** con inteligencia artificial integrada. Combina:
 
-✅ **Automatización completa** — Bot de trading 24/7 con indicadores técnicos (EMA, MACD, RSI)  
-✅ **Machine Learning** — Sistema de predicción con Random Forest + Knowledge Base para futuras IAs  
-✅ **Backtesting profesional** — Validación histórica con métricas avanzadas (Sharpe, Drawdown, Win Rate)  
-✅ **UI moderna** — Interfaz web responsive con dashboard profesional y panel de control  
-✅ **REST API completa** — 20+ endpoints para integración y automatización  
-✅ **Arquitectura escalable** — Diseño modular listo para extender con LSTM, RL, Transformers  
-✅ **Empaquetado profesional** — Generador .exe con PyInstaller e instalador Windows  
+✅ **Automatización completa** — Bot de trading 24/7 con indicadores técnicos (EMA, MACD, RSI)
+✅ **Machine Learning** — Sistema de predicción con Random Forest + Knowledge Base para futuras IAs
+✅ **Backtesting profesional** — Validación histórica con métricas avanzadas (Sharpe, Drawdown, Win Rate)
+✅ **UI moderna** — Interfaz web responsive con dashboard profesional y panel de control
+✅ **REST API completa** — 20+ endpoints para integración y automatización
+✅ **Arquitectura escalable** — Diseño modular listo para extender con LSTM, RL, Transformers
+✅ **Empaquetado profesional** — Generador .exe con PyInstaller e instalador Windows
 
 ### 🚀 Casos de uso
 
@@ -437,7 +437,7 @@ PROYECTO 2/
                     ├─ ML Pipeline       │
                     ├─ Knowledge Base    │
                     └─ Transfer Learning │
-        
+
         [Backtest Engine]    [Config Manager]    [Logger]
 ```
 
@@ -647,7 +647,7 @@ class TradingLSTM(nn.Module):
         super().__init__()
         self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True)
         self.fc = nn.Linear(hidden_size, 3)  # BUY, SELL, HOLD
-    
+
     def forward(self, x):
         lstm_out, _ = self.lstm(x)
         logits = self.fc(lstm_out[:, -1, :])
@@ -1244,7 +1244,7 @@ ls -Recurse src/trading_phantom/data/knowledge_base/
 bot:
   delay_between_iterations: 1.0  # Aumentar delay
   max_iterations_per_run: 50      # Reducir iteraciones
-  
+
 mt5:
   request_timeout: 10  # Aumentar timeout
 ```
@@ -1367,9 +1367,9 @@ ruff format src/ tests/     # Formatear código
 
 Este proyecto está bajo la licencia **MIT**. Eres libre de:
 
-✅ **Usar** en proyectos privados o comerciales  
-✅ **Modificar** el código  
-✅ **Distribuir** versiones modificadas  
+✅ **Usar** en proyectos privados o comerciales
+✅ **Modificar** el código
+✅ **Distribuir** versiones modificadas
 
 Con la condición de:
 - 📋 Incluir el aviso de licencia
@@ -1451,9 +1451,8 @@ Status actual:             ✨ Active Development
 
 **Made with ❤️ by the Trading Phantom community**
 
-*Última actualización: Enero 2026*  
-*Version: 1.1.0*  
+*Última actualización: Enero 2026*
+*Version: 1.1.0*
 *License: MIT*
 
 </div>
-

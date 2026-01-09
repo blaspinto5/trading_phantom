@@ -11,7 +11,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0d1b2a 100%);
             color: #00ff88;
@@ -21,7 +21,7 @@
             position: relative;
             overflow-x: hidden;
         }
-        
+
         /* Animated background */
         body::before {
             content: '';
@@ -30,31 +30,31 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
                 radial-gradient(circle at 80% 50%, rgba(0, 212, 255, 0.05) 0%, transparent 50%);
             pointer-events: none;
             z-index: -1;
             animation: pulse 8s ease-in-out infinite;
         }
-        
+
         @keyframes pulse {
             0%, 100% { opacity: 0.5; }
             50% { opacity: 1; }
         }
-        
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
         }
-        
+
         header {
             text-align: center;
             margin-bottom: 40px;
             position: relative;
             z-index: 1;
         }
-        
+
         h1 {
             font-size: 2.5em;
             color: #00ff88;
@@ -62,19 +62,19 @@
             margin-bottom: 10px;
             animation: glow 3s ease-in-out infinite;
         }
-        
+
         @keyframes glow {
             0%, 100% { text-shadow: 0 0 20px rgba(0, 255, 136, 0.6), 0 0 40px rgba(0, 212, 255, 0.3); }
             50% { text-shadow: 0 0 30px rgba(0, 255, 136, 0.8), 0 0 60px rgba(0, 212, 255, 0.5); }
         }
-        
+
         .subtitle {
             color: #00d4ff;
             font-size: 1.1em;
             text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
             margin-bottom: 20px;
         }
-        
+
         .status-badge {
             display: inline-block;
             background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
@@ -85,7 +85,7 @@
             margin-top: 10px;
             box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
         }
-        
+
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -94,7 +94,7 @@
             position: relative;
             z-index: 1;
         }
-        
+
         .metric-card {
             background: rgba(13, 27, 42, 0.6);
             border: 2px solid #00ff88;
@@ -106,7 +106,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .metric-card::before {
             content: '';
             position: absolute;
@@ -117,18 +117,18 @@
             background: linear-gradient(45deg, transparent, rgba(0, 255, 136, 0.1), transparent);
             animation: shine 3s infinite;
         }
-        
+
         @keyframes shine {
             0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
             100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
-        
+
         .metric-card:hover {
             border-color: #00d4ff;
             box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
             transform: translateY(-5px);
         }
-        
+
         .metric-label {
             color: #00d4ff;
             font-size: 0.9em;
@@ -136,7 +136,7 @@
             letter-spacing: 1px;
             margin-bottom: 10px;
         }
-        
+
         .metric-value {
             font-size: 2.5em;
             color: #00ff88;
@@ -145,13 +145,13 @@
             position: relative;
             z-index: 1;
         }
-        
+
         .metric-subtext {
             color: #888;
             font-size: 0.8em;
             margin-top: 5px;
         }
-        
+
         .charts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
@@ -160,7 +160,7 @@
             position: relative;
             z-index: 1;
         }
-        
+
         .chart-container {
             background: rgba(13, 27, 42, 0.6);
             border: 2px solid #00ff88;
@@ -170,7 +170,7 @@
             box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
             position: relative;
         }
-        
+
         .chart-container h3 {
             color: #00d4ff;
             margin-bottom: 20px;
@@ -178,7 +178,7 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
+
         .features-table {
             background: rgba(13, 27, 42, 0.6);
             border: 2px solid #00ff88;
@@ -191,7 +191,7 @@
             margin-bottom: 40px;
             overflow-x: auto;
         }
-        
+
         .features-table h3 {
             color: #00d4ff;
             margin-bottom: 20px;
@@ -199,12 +199,12 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
         }
-        
+
         th {
             background: rgba(0, 255, 136, 0.1);
             color: #00d4ff;
@@ -214,22 +214,22 @@
             text-transform: uppercase;
             font-size: 0.9em;
         }
-        
+
         td {
             padding: 12px;
             border-bottom: 1px solid rgba(0, 255, 136, 0.2);
             color: #00ff88;
         }
-        
+
         tr:hover {
             background: rgba(0, 255, 136, 0.05);
         }
-        
+
         .feature-name {
             font-weight: bold;
             color: #00d4ff;
         }
-        
+
         .importance-bar {
             display: inline-block;
             height: 20px;
@@ -238,7 +238,7 @@
             margin-left: 10px;
             box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
         }
-        
+
         .footer {
             text-align: center;
             color: #666;
@@ -248,16 +248,16 @@
             position: relative;
             z-index: 1;
         }
-        
+
         .timestamp {
             color: #666;
             font-size: 0.9em;
         }
-        
+
         canvas {
             max-height: 400px;
         }
-        
+
         .improvement-indicator {
             display: inline-block;
             background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
@@ -277,7 +277,7 @@
             <p class="subtitle">Advanced Training with Enhanced Features & Cross-Validation</p>
             <div class="status-badge">✅ TRAINED & OPTIMIZED</div>
         </header>
-        
+
         <div class="metrics-grid">
             <div class="metric-card">
                 <div class="metric-label">Accuracy (Test Set)</div>
@@ -286,62 +286,62 @@
                 </div>
                 <div class="metric-subtext">From 62.5% to 95% with advanced features</div>
             </div>
-            
+
             <div class="metric-card">
                 <div class="metric-label">Precision</div>
                 <div class="metric-value">94.74%</div>
                 <div class="metric-subtext">Excellent prediction accuracy</div>
             </div>
-            
+
             <div class="metric-card">
                 <div class="metric-label">Recall</div>
                 <div class="metric-value">94.74%</div>
                 <div class="metric-subtext">Balanced detection rate</div>
             </div>
-            
+
             <div class="metric-card">
                 <div class="metric-label">ROC-AUC</div>
                 <div class="metric-value">0.9825</div>
                 <div class="metric-subtext">Outstanding classification</div>
             </div>
-            
+
             <div class="metric-card">
                 <div class="metric-label">CV Mean Accuracy</div>
                 <div class="metric-value">86.88%</div>
                 <div class="metric-subtext">5-fold cross-validation</div>
             </div>
-            
+
             <div class="metric-card">
                 <div class="metric-label">Model Features</div>
                 <div class="metric-value">20</div>
                 <div class="metric-subtext">Advanced engineered features</div>
             </div>
-            
+
             <div class="metric-card">
                 <div class="metric-label">Training Trades</div>
                 <div class="metric-value">200</div>
                 <div class="metric-subtext">160 train / 40 test split</div>
             </div>
-            
+
             <div class="metric-card">
                 <div class="metric-label">Model Type</div>
                 <div class="metric-value">RF-200</div>
                 <div class="metric-subtext">Random Forest (200 trees)</div>
             </div>
         </div>
-        
+
         <div class="charts-grid">
             <div class="chart-container">
                 <h3>📊 Class Distribution</h3>
                 <canvas id="classDistChart"></canvas>
             </div>
-            
+
             <div class="chart-container">
                 <h3>🎯 Performance Metrics</h3>
                 <canvas id="performanceChart"></canvas>
             </div>
         </div>
-        
+
         <div class="features-table">
             <h3>🔝 Top 10 Most Important Features</h3>
             <table>
@@ -417,7 +417,7 @@
                 </tbody>
             </table>
         </div>
-        
+
         <div class="features-table">
             <h3>📋 Training Summary</h3>
             <table>
@@ -449,13 +449,13 @@
                 </tbody>
             </table>
         </div>
-        
+
         <footer>
             <p>🚀 Trading Phantom - Advanced ML Model Dashboard</p>
             <p class="timestamp">Last Updated: 2026-01-08 | Model: Random Forest (200 trees) | Training Trades: 200</p>
         </footer>
     </div>
-    
+
     <script>
         // Class Distribution Chart
         const classCtx = document.getElementById('classDistChart').getContext('2d');
@@ -482,7 +482,7 @@
                 }
             }
         });
-        
+
         // Performance Metrics Chart
         const perfCtx = document.getElementById('performanceChart').getContext('2d');
         new Chart(perfCtx, {

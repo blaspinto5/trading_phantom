@@ -1,18 +1,18 @@
 # core/orchestrator.py
 
 import logging
-import time
 import os
+import time
 from datetime import datetime
-from typing import Optional, Callable, Dict, Any
+from typing import Any, Callable, Dict, Optional
 
 import MetaTrader5 as mt5
 
 from trading_phantom.config.config_loader import load_config
 from trading_phantom.modules.risk_manager import RiskManager
 from trading_phantom.modules.strategy import Strategy
-from trading_phantom.modules.trader import Trader
 from trading_phantom.modules.trade_history import TradeHistory
+from trading_phantom.modules.trader import Trader
 from trading_phantom.mt5.connector import MT5Connector
 
 
@@ -61,12 +61,14 @@ def run_bot(iterations: Optional[int] = None) -> None:
         symbol,
         timeframe,
         mt5_conn,
-        ema_fast=int(config.get('ema_fast', 12)),
-        ema_slow=int(config.get('ema_slow', 26)),
-        macd_signal=int(config.get('macd_signal', 9)),
-        rsi_period=int(config.get('rsi_period', 14)),
+        ema_fast=int(config.get("ema_fast", 12)),
+        ema_slow=int(config.get("ema_slow", 26)),
+        macd_signal=int(config.get("macd_signal", 9)),
+        rsi_period=int(config.get("rsi_period", 14)),
         ml_predictor=None,
-        ml_confidence_threshold=float(config.get('ml', {}).get('confidence_threshold', 0.7)),
+        ml_confidence_threshold=float(
+            config.get("ml", {}).get("confidence_threshold", 0.7)
+        ),
     )
     risk_manager = RiskManager(config, mt5_conn)
     trader = Trader(mt5_conn, risk_manager)
@@ -74,19 +76,22 @@ def run_bot(iterations: Optional[int] = None) -> None:
 
     # Initialize ML predictor if enabled
     ml_predictor: Optional[Callable[[Dict[str, float]], Dict[str, Any]]] = None
-    ml_config = config.get('ml', {})
-    if ml_config.get('enabled', False):
+    ml_config = config.get("ml", {})
+    if ml_config.get("enabled", False):
         try:
             from trading_phantom.analytics.ml_pipeline import StrategyModel
+
             ml_model = StrategyModel()
-            ml_confidence_threshold = float(ml_config.get('confidence_threshold', 0.7))
-            logger.info("🤖 ML habilitado (umbral confianza: %.2f)", ml_confidence_threshold)
+            ml_confidence_threshold = float(ml_config.get("confidence_threshold", 0.7))
+            logger.info(
+                "🤖 ML habilitado (umbral confianza: %.2f)", ml_confidence_threshold
+            )
             ml_predictor = ml_model.predict
             strategy.ml_predictor = ml_predictor
             strategy.ml_confidence_threshold = ml_confidence_threshold
         except Exception:
             logger.warning("⚠️ No se pudo inicializar ML; continuando sin él")
-            ml_config['enabled'] = False
+            ml_config["enabled"] = False
 
     logger.info("✅ Estrategia, RiskManager y Trader inicializados")
 
@@ -112,14 +117,16 @@ def run_bot(iterations: Optional[int] = None) -> None:
                 time.sleep(loop_interval)
                 continue
 
-            logger.info("💱 %s | BID: %s | ASK: %s", price['symbol'], price['bid'], price['ask'])
+            logger.info(
+                "💱 %s | BID: %s | ASK: %s", price["symbol"], price["bid"], price["ask"]
+            )
 
             rates = mt5_conn.get_rates(price["symbol"], timeframe, 1)
             if rates is None or len(rates) == 0:
                 time.sleep(loop_interval)
                 continue
 
-            current_candle_time = datetime.fromtimestamp(rates[0]["time"]) 
+            current_candle_time = datetime.fromtimestamp(rates[0]["time"])
 
             if last_candle_time != current_candle_time:
                 logger.info("🆕 Nueva vela detectada")
@@ -132,7 +139,7 @@ def run_bot(iterations: Optional[int] = None) -> None:
                 continue
 
             signal = strategy.generate_signal()
-            if ml_config.get('enabled') and ml_predictor:
+            if ml_config.get("enabled") and ml_predictor:
                 logger.info("📈 Señal: %s (con ML)", signal)
             else:
                 logger.info("📈 Señal: %s", signal)
@@ -140,7 +147,10 @@ def run_bot(iterations: Optional[int] = None) -> None:
             # count processed ticks (useful for --iterations testing)
             processed += 1
             if remaining is not None and processed >= remaining:
-                logger.info("🔢 Alcanzado número de iteraciones solicitado (%s). Saliendo.", remaining)
+                logger.info(
+                    "🔢 Alcanzado número de iteraciones solicitado (%s). Saliendo.",
+                    remaining,
+                )
                 break
 
             if signal != "HOLD":
@@ -153,7 +163,7 @@ def run_bot(iterations: Optional[int] = None) -> None:
                         volume=executed["volume"],
                         entry_price=executed["entry_price"],
                         sl=executed["sl"],
-                        tp=executed["tp"]
+                        tp=executed["tp"],
                     )
                     traded_this_candle = True
 

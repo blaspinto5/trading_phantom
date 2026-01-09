@@ -184,7 +184,7 @@ python documentacion/generate_pdf.py
 
 ### Después de leer la documentación:
 
-1. **Instalar:** 
+1. **Instalar:**
    ```powershell
    .\INSTALL.bat
    .\RUN.bat
@@ -234,7 +234,7 @@ python documentacion/generate_pdf.py
 
 **¡Bienvenido a Trading Phantom!**
 
-Esperamos que disfrutes del proyecto.  
+Esperamos que disfrutes del proyecto.
 Si tienes preguntas, consulta la documentación arriba.
 
 **[README.md](README.md) • [ARCHIVOS_Y_FUNCIONES.md](ARCHIVOS_Y_FUNCIONES.md) • [PDF](Trading_Phantom_Documentation.pdf)**

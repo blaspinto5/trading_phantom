@@ -5,18 +5,12 @@ import time
 from datetime import datetime
 from typing import Optional
 
-from trading_phantom.config.config_loader import load_config
-from trading_phantom.mt5.connector import MT5Connector
-from trading_phantom.modules.strategy import Strategy
-from trading_phantom.modules.risk_manager import RiskManager
-from trading_phantom.modules.trader import Trader
-from trading_phantom.modules.trade_history import TradeHistory
-
 import MetaTrader5 as mt5
 
 from trading_phantom.config.config_loader import load_config
 from trading_phantom.modules.risk_manager import RiskManager
 from trading_phantom.modules.strategy import Strategy  # A completar luego
+from trading_phantom.modules.trade_history import TradeHistory
 from trading_phantom.modules.trader import Trader
 from trading_phantom.mt5.connector import MT5Connector
 
@@ -91,7 +85,9 @@ def run_bot(iterations: Optional[int] = None) -> None:
                 time.sleep(loop_interval)
                 continue
 
-            logger.info("💱 %s | BID: %s | ASK: %s", price['symbol'], price['bid'], price['ask'])
+            logger.info(
+                "💱 %s | BID: %s | ASK: %s", price["symbol"], price["bid"], price["ask"]
+            )
 
             rates = mt5_conn.get_rates(price["symbol"], timeframe, 1)
             if rates is None or len(rates) == 0:
@@ -116,7 +112,10 @@ def run_bot(iterations: Optional[int] = None) -> None:
             # count processed ticks (useful for --iterations testing)
             processed += 1
             if remaining is not None and processed >= remaining:
-                logger.info("🔢 Alcanzado número de iteraciones solicitado (%s). Saliendo.", remaining)
+                logger.info(
+                    "🔢 Alcanzado número de iteraciones solicitado (%s). Saliendo.",
+                    remaining,
+                )
                 break
 
             if signal != "HOLD":
@@ -129,7 +128,7 @@ def run_bot(iterations: Optional[int] = None) -> None:
                         volume=executed["volume"],
                         entry_price=executed["entry_price"],
                         sl=executed["sl"],
-                        tp=executed["tp"]
+                        tp=executed["tp"],
                     )
                     traded_this_candle = True
 

@@ -25,4 +25,3 @@ python backtesting/run_backtest_parallel.py
 Resultados principales
 
 - Backtest estrategia mejorada: ROI +317.61%, Win Rate 98.92% (ver `backtesting/resultados/`).
-

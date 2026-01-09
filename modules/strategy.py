@@ -15,8 +15,16 @@ class Strategy:
     Señales: 'BUY', 'SELL' o 'HOLD'.
     """
 
-    def __init__(self, symbol: str, timeframe: Optional[int], mt5_connector: Optional[Any] = None,
-                 ema_fast: int = 12, ema_slow: int = 26, macd_signal: int = 9, rsi_period: int = 14) -> None:
+    def __init__(
+        self,
+        symbol: str,
+        timeframe: Optional[int],
+        mt5_connector: Optional[Any] = None,
+        ema_fast: int = 12,
+        ema_slow: int = 26,
+        macd_signal: int = 9,
+        rsi_period: int = 14,
+    ) -> None:
         """Inicializa la estrategia con parámetros.
 
         Args:
@@ -82,7 +90,9 @@ class Strategy:
         df = self.get_data()
 
         if df is None or len(df) < max(self.ema_slow, self.macd_signal) + 5:
-            logger.info("HOLD: datos insuficientes (bars=%s)", None if df is None else len(df))
+            logger.info(
+                "HOLD: datos insuficientes (bars=%s)", None if df is None else len(df)
+            )
             return "HOLD"
 
         # Calcular indicadores
@@ -106,8 +116,12 @@ class Strategy:
 
         # ---- BUY ----
         # Cruce de MACD alcista + EMA cruce + RSI confirmación
-        macd_crossover_buy = (prev_macd is not None and prev_macd_signal is not None and
-                              prev_macd <= prev_macd_signal and macd_val > macd_signal_val)
+        macd_crossover_buy = (
+            prev_macd is not None
+            and prev_macd_signal is not None
+            and prev_macd <= prev_macd_signal
+            and macd_val > macd_signal_val
+        )
         ema_buy = ema_fast_val > ema_slow_val
         rsi_buy = rsi_val > 45  # RSI positivo
 
@@ -116,14 +130,21 @@ class Strategy:
         if buy_cond:
             logger.info(
                 "🟢 BUY: MACD crossover ✓ | EMA%.0f > EMA%.0f ✓ | RSI=%.2f ✓ | Close=%.5f",
-                self.ema_fast, self.ema_slow, rsi_val, close_val
+                self.ema_fast,
+                self.ema_slow,
+                rsi_val,
+                close_val,
             )
             return "BUY"
 
         # ---- SELL ----
         # Cruce de MACD bajista + EMA cruce + RSI confirmación
-        macd_crossover_sell = (prev_macd is not None and prev_macd_signal is not None and
-                               prev_macd >= prev_macd_signal and macd_val < macd_signal_val)
+        macd_crossover_sell = (
+            prev_macd is not None
+            and prev_macd_signal is not None
+            and prev_macd >= prev_macd_signal
+            and macd_val < macd_signal_val
+        )
         ema_sell = ema_fast_val < ema_slow_val
         rsi_sell = rsi_val < 55  # RSI negativo
 
@@ -132,14 +153,21 @@ class Strategy:
         if sell_cond:
             logger.info(
                 "🔴 SELL: MACD crossover ✓ | EMA%.0f < EMA%.0f ✓ | RSI=%.2f ✓ | Close=%.5f",
-                self.ema_fast, self.ema_slow, rsi_val, close_val
+                self.ema_fast,
+                self.ema_slow,
+                rsi_val,
+                close_val,
             )
             return "SELL"
 
         # ---- HOLD ----
         reasons = []
-        reasons.append(f"EMA{self.ema_fast}={ema_fast_val:.5f}" if ema_fast_val else "EMA_NA")
-        reasons.append(f"EMA{self.ema_slow}={ema_slow_val:.5f}" if ema_slow_val else "EMA_NA")
+        reasons.append(
+            f"EMA{self.ema_fast}={ema_fast_val:.5f}" if ema_fast_val else "EMA_NA"
+        )
+        reasons.append(
+            f"EMA{self.ema_slow}={ema_slow_val:.5f}" if ema_slow_val else "EMA_NA"
+        )
         reasons.append(f"MACD={macd_val:.5f}" if macd_val else "MACD_NA")
         reasons.append(f"RSI={rsi_val:.2f}" if rsi_val else "RSI_NA")
 

@@ -92,7 +92,7 @@ Ajuste:         Automático según equity
 
 **Tres tipos de salida:**
 1. **SL (Stop Loss):** -2% = Limitar pérdidas
-2. **TP (Take Profit):** +4% = Asegurar ganancias  
+2. **TP (Take Profit):** +4% = Asegurar ganancias
 3. **MID (Parcial):** Entre SL y TP = Aceptar resultado
 
 ---
@@ -378,10 +378,10 @@ Aprende: Cómo implementar risk management
 
 ---
 
-**Generado:** 2026-01-08 19:20:55 UTC  
-**Modelo:** Advanced Random Forest (95% accuracy)  
-**Estrategia:** Improved Trading with Risk Management  
-**ROI Backtesting:** +317.61%  
-**Win Rate:** 98.92%  
-**Status:** ✅ PRODUCTION READY  
+**Generado:** 2026-01-08 19:20:55 UTC
+**Modelo:** Advanced Random Forest (95% accuracy)
+**Estrategia:** Improved Trading with Risk Management
+**ROI Backtesting:** +317.61%
+**Win Rate:** 98.92%
+**Status:** ✅ PRODUCTION READY
 **Próximo:** Deployar en vivo y monitorear
