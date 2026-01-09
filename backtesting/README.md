@@ -1,27 +1,22 @@
-# Backtesting
+# Backtesting — Guía y uso
 
-Este directorio contiene todo lo relativo a backtesting y evaluación de estrategias.
+Carpeta con herramientas para evaluar estrategias: backtests numéricos, pruebas
+de robustez y utilidades para ejecutar backtests en paralelo.
 
-Contenido clave
+Contenido clave:
+- `backtest_improved_strategy.py` — Backtest de la estrategia con gestión de riesgo.
+- `backtest_advanced_model.py` — Backtest orientado a evaluación de modelos ML.
+- `run_backtest_parallel.py` — Ejecuta backtests en paralelo y guarda resultados en `resultados/`.
 
-- `backtest_advanced_model.py` — Backtest del modelo ML puro (archivos originales).
-- `backtest_improved_strategy.py` — Backtest de la estrategia mejorada con gestión de riesgo.
-- `run_backtest_parallel.py` — Script para ejecutar backtests en paralelo.
-- `resultados/` — Resultados y JSONs con métricas y reportes.
+Buenas prácticas:
+- No comitees datasets grandes; guarda solo resúmenes y métricas en `resultados/`.
+- Registra los parámetros del backtest (símbolo, timeframe, seed) para reproducibilidad.
 
-Resumen de prácticas y recomendaciones
-
-- Mantén los datos de resultados en `backtesting/resultados/` y evita almacenar archivos grandes en el repo.
-- Documenta claramente los parámetros de cada backtest (periodo temporal, símbolo, tamaños de muestra).
-- Usa `requirements.txt` o `pyproject.toml` para reproducibilidad de versión.
-
-Comandos comunes
-
+Comandos de ejemplo:
 ```bash
 python backtesting/backtest_improved_strategy.py
 python backtesting/run_backtest_parallel.py
 ```
 
-Resultados principales
-
-- Backtest estrategia mejorada: ROI +317.61%, Win Rate 98.92% (ver `backtesting/resultados/`).
+Resultados y métricas se almacenan en `backtesting/resultados/`. Para reproducir
+experimentos, usa `pyproject.toml`/`requirements.txt` con versiones fijas.

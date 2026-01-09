@@ -1,12 +1,14 @@
-# main.py
+# Copiado desde main.py en la raíz
 
 import logging
 import sys
 from pathlib import Path
 
-# Allow running as script (python trading_phantom/main.py) or as module (python -m trading_phantom.main)
+# Allow running as script (python trading_phantom/main.py) or as module
+# (python -m trading_phantom.main)
 if __package__ is None:
-    # When running as a script, prefer adding `src/` to sys.path so imports resolve the canonical package
+    # When running as a script, add `src/` to `sys.path` so imports resolve
+    # the canonical package during local launches.
     root = Path(__file__).resolve().parent
     src = root / "src"
     sys.path.insert(0, str(src))

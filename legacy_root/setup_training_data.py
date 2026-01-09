@@ -2,19 +2,12 @@
 """
 Script para inicializar la BD e insertar datos de prueba para entrenar el modelo ML.
 """
-import os
+import logging
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
 
-# Agregar src/ al path
-sys.path.insert(0, str(Path(__file__).parent / "src"))
-
-import logging
-from datetime import datetime, timedelta
-
 import numpy as np
-
-from trading_phantom.analytics.db import Trade, get_session, init_db
 
 logging.basicConfig(
     level=logging.INFO, format="[%(asctime)s] %(levelname)s %(message)s"
@@ -25,6 +18,12 @@ logger = logging.getLogger(__name__)
 def generate_training_data():
     """Genera 200 trades de prueba para entrenar el modelo."""
     logger.info("🚀 Generando datos de entrenamiento...")
+
+    # Asegurar que `src/` esté en path cuando se ejecuta como script
+    sys.path.insert(0, str(Path(__file__).parent / "src"))
+
+    # Importar módulos del paquete después de garantizar path
+    from trading_phantom.analytics.db import Trade, get_session, init_db
 
     # Inicializar BD
     init_db()
@@ -86,7 +85,8 @@ def generate_training_data():
         logger.info("\n📊 Ejemplos de trades:")
         for trade in examples:
             logger.info(
-                f"  - {trade.side} {trade.symbol} @ {trade.price:.5f} | PnL: ${trade.pnl:.2f}"
+                "  - %s %s @ %.5f | PnL: $%.2f"
+                % (trade.side, trade.symbol, trade.price, trade.pnl)
             )
 
     finally:

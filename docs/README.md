@@ -3,24 +3,23 @@
 Esta guía amplía y especifica la documentación del proyecto, alineada a la nueva estructura basada en `src/` y buenas prácticas.
 
 ## Índice
-- Introducción y objetivos
-- Estructura del repositorio
-- Instalación y entorno
-- Configuración (YAML)
-- Desarrollo: UI y API
-- Orquestación del bot
-- Backtesting (numérico y visual)
-- Pruebas y linter
-- Empaquetado (.exe) y instalador
-- CI (GitHub Actions)
-- Seguridad, secretos y auditoría
-- Troubleshooting (FAQ)
-- Contribuir y roadmap
 
----
+# Documentation — Trading Phantom
 
-## Introducción
-Trading Phantom es una plataforma de trading algorítmico en Python orientada a MetaTrader 5 (MT5). Provee UI (Flask + pywebview), API para control del bot, backtesting numérico y visual, y herramientas de empaquetado.
+Bienvenido a la documentación oficial de Trading Phantom. Aquí encontrarás guías
+rápidas, arquitectura, API y notas de diseño pensadas para colaboradores y
+auditoría técnica.
+
+Secciones principales:
+- **Quickstart**: arranque rápido para desarrollo y backtesting.
+- **Architecture**: visión de alto nivel y diagrama de componentes.
+- **API**: descripción de endpoints y adaptadores.
+
+Navegación rápida:
+- [Índice (docs/index.md)](index.md)
+- [Guía rápida (docs/QUICKSTART.md)](QUICKSTART.md)
+
+Si quieres contribuir, lee `archive/docs_root_archive/CONTRIBUTING.md`.
 
 > Nota de ejecución: este repositorio usa el layout `src/` como canonical. Para ejecutar localmente asegúrate de ejecutar desde la raíz del repositorio y con `PYTHONPATH=src` o usando el módulo: `python -m trading_phantom.main`. Esto evita importar la copia legacy que se conservó en `archive/`.
 
