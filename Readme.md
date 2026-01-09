@@ -8,6 +8,7 @@ under `src/trading_phantom/` plus tools, backtesting scripts and docs.
 
 Badges
 - CI: ![CI](https://github.com/blaspinto5/trading_phantom/actions/workflows/ci.yml/badge.svg)
+- Coverage: ![Codecov](https://codecov.io/gh/blaspinto5/trading_phantom/branch/main/graph/badge.svg)
 - License: ![MIT](https://img.shields.io/badge/license-MIT-green)
 
 Quick links
