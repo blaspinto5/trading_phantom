@@ -1,0 +1,53 @@
+# =========================
+# CONFIGURACIÓN GENERAL
+# =========================
+mode: demo          # demo | real
+log_level: INFO
+
+symbol: EURUSD
+timeframe: H1       # M1, M5, M15, H1, H4, D1
+max_positions: 3
+# Estrategia EMA + MACD + RSI
+ema_fast: 12
+ema_slow: 26
+macd_signal: 9
+rsi_period: 14
+
+# =========================
+# RIESGO
+# =========================
+risk:
+  risk_per_trade: 0.01      # 1% por trade
+  fixed_lot: null           # usar null para cálculo automático
+  max_daily_loss: 0.03      # 3% pérdida diaria máxima
+
+# =========================
+# STOP LOSS / TAKE PROFIT
+# =========================
+orders:
+  sl_pips: 20
+  tp_pips: 40
+  deviation: 20
+
+# =========================
+# LOOP
+# =========================
+execution:
+  loop_interval_seconds: 60   # cada cuánto corre el bot
+
+# =========================
+# ML (opcional)
+# =========================
+ml:
+  enabled: true             # 🚀 ACTIVADO: Usando modelo avanzado (95% accuracy)
+  confidence_threshold: 0.55 # umbral mínimo para aceptar la señal ML (55%)
+  model_path: "src/data/models/advanced_model.pkl"
+
+# =========================
+# RIESGO MEJORADO
+# =========================
+improved_strategy:
+  enabled: true             # 🚀 ACTIVADO: Usar estrategia mejorada con risk management
+  stop_loss_pct: 0.02       # -2% stop loss
+  take_profit_pct: 0.04     # +4% take profit (1:2 ratio)
+  position_size: 0.95       # 95% del equity

@@ -1,0 +1,4 @@
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "W", "I", "C", "B"]
+# Removed flake8-specific ignore entries incompatible with current ruff

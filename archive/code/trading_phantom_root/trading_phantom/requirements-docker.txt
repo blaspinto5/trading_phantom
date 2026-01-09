@@ -1,0 +1,10 @@
+# Minimal runtime deps for Docker (no MT5, no GUI)
+pandas
+numpy
+matplotlib
+backtesting
+Flask>=2.0
+SQLAlchemy>=2.0
+scikit-learn>=1.3
+requests>=2.31
+pyarrow>=14.0

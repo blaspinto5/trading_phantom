@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trading Phantom - ML Overview</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="shell">
+    <div class="hero">
+      <div class="title">
+        <h1>IA / Machine Learning</h1>
+        <p>Arquitectura, dataset, features y operaciones disponibles</p>
+      </div>
+      <div class="nav">
+        <a class="pill" href="/">Volver al panel</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h2>Arquitectura</h2><span class="hint">Entrenamiento offline + scoring online</span></div>
+      <p class="badge">Modelo: RandomForestClassifier (sklearn)</p>
+      <ul style="color: var(--muted); line-height:1.6; padding-left:18px;">
+        <li>Pipeline en <strong>ml_pipeline.py</strong> con RandomForest y escalado simple.</li>
+        <li>Entrenamiento desde trades historicos almacenados en SQLite/JSON.</li>
+        <li>Feature store basico: EMA fast/slow, MACD, RSI, volumen, direction, profit flag.</li>
+        <li>Uso en tiempo real: el Strategy aplica filtro ML si ml.enabled=true y supera el umbral.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h2>Datos</h2><span class="hint">Persistencia dual</span></div>
+      <p>Los trades se guardan en:</p>
+      <ul style="color: var(--muted); line-height:1.6; padding-left:18px;">
+        <li>SQLite: data/trading_phantom.db via analytics/db.py (tabla trades).</li>
+        <li>JSON: modules/trade_history.py tambien serializa en data/trade_history.json.</li>
+      </ul>
+      <p class="info-callout">Si el esquema de SQLite cambia, borra data/trading_phantom.db para regenerar.</p>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h2>Entrenamiento</h2><span class="hint">scripts/ml_train.py</span></div>
+      <ol style="color: var(--muted); line-height:1.6; padding-left:18px;">
+        <li>Recolecta trades ejecutados (orquestador + TradeHistory).</li>
+        <li>Ejecuta <strong>python scripts/ml_train.py</strong> para entrenar y guardar modelo en data/.</li>
+        <li>Revisa metricas impresas: accuracy y muestras usadas.</li>
+        <li>Habilita en config/config.yaml: ml.enabled: true y ajusta ml.confidence_threshold.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h2>Features utilizadas</h2><span class="hint">Inputs al modelo</span></div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="label">EMA Fast</div><div class="value">ema_fast</div></div>
+        <div class="kpi"><div class="label">EMA Slow</div><div class="value">ema_slow</div></div>
+        <div class="kpi"><div class="label">MACD</div><div class="value">macd</div></div>
+        <div class="kpi"><div class="label">MACD Signal</div><div class="value">signal</div></div>
+        <div class="kpi"><div class="label">RSI</div><div class="value">rsi</div></div>
+        <div class="kpi"><div class="label">Volumen</div><div class="value">volume</div></div>
+        <div class="kpi"><div class="label">Sentido</div><div class="value">direction</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h2>Uso en estrategia</h2><span class="hint">modules/strategy.py</span></div>
+      <p>El filtro ML se aplica tras la senal tecnica EMA+MACD+RSI. Si la probabilidad predicha de profit supera el umbral (confidence_threshold), se permite la entrada; si no, se descarta.</p>
+      <p>Parametros relevantes en config/config.yaml:</p>
+      <ul style="color: var(--muted); line-height:1.6; padding-left:18px;">
+        <li>ml.enabled: activar/desactivar filtro ML.</li>
+        <li>ml.confidence_threshold: umbral [0-1].</li>
+        <li>strategy.ema_fast / ema_slow / macd_signal / rsi_period.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h2>Checklist rapido</h2><span class="hint">Para operarlo</span></div>
+      <ul style="color: var(--muted); line-height:1.6; padding-left:18px;">
+        <li>1) Ejecuta el bot con RUN.bat (o /api/bot/start).</li>
+        <li>2) Genera datos (operar o backtest).</li>
+        <li>3) Entrena con scripts/ml_train.py.</li>
+        <li>4) Activa ml.enabled y fija el umbral.</li>
+        <li>5) Monitorea en el panel principal (logs, backtests, estado).</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

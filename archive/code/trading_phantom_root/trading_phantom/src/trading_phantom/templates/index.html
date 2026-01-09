@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trading Phantom - Control Panel</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="shell">
+    <div class="hero">
+      <div class="title">
+        <h1>Trading Phantom</h1>
+        <p>Control en vivo, backtests y monitoreo de logs</p>
+      </div>
+      <div class="nav">
+        <a class="pill" href="/info/ml">IA y ML</a>
+        <a class="pill" href="#logs-card">Logs</a>
+        <span class="status" id="status-pill"><span class="dot" id="status-dot"></span><span id="bot-status">Status: unknown</span></span>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi"><div class="label">Iteraciones</div><div class="value" id="kpi-iter">-</div></div>
+      <div class="kpi"><div class="label">Trades abiertos</div><div class="value" id="kpi-open">-</div></div>
+      <div class="kpi"><div class="label">P&L estimado</div><div class="value" id="kpi-pnl">-</div></div>
+      <div class="kpi"><div class="label">Ultimo backtest</div><div class="value" id="kpi-backtest">-</div></div>
+    </div>
+
+    <div class="grid">
+      <div class="card" id="logs-card">
+        <div class="section-title"><h2>Bot</h2><span class="hint">Control rapido</span></div>
+        <div class="row">
+          <label>Iterations (vacio = continuo)<input id="iterations" type="number" placeholder="continuo"></label>
+          <label class="row" style="align-items:center;gap:8px;">
+            <span>Debug</span>
+            <input id="debug" type="checkbox" style="width:18px;height:18px;">
+          </label>
+        </div>
+        <div class="row" style="margin-top:12px;">
+          <button id="btn-start">Iniciar Bot</button>
+          <button class="ghost" id="btn-stop">Detener</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title"><h2>Bot Logs</h2><span class="hint">Auto refresh</span></div>
+        <div class="row" style="align-items:center;">
+          <label class="row" style="align-items:center;gap:8px;flex:unset;">
+            <input id="auto_logs" type="checkbox" checked style="width:18px;height:18px;">
+            <span>Auto</span>
+          </label>
+          <button class="ghost" id="btn-refresh-botlogs">Refrescar</button>
+        </div>
+        <pre id="bot-logs" class="logbox">No bot logs loaded yet.</pre>
+      </div>
+
+      <div class="card">
+        <div class="section-title"><h2>Backtest</h2><span class="hint">Ejecutar y monitorear</span></div>
+        <div class="row">
+          <label>Symbol<input id="symbol" value="EURUSD-T"></label>
+          <label>Bars<input id="bars" type="number" value="500"></label>
+        </div>
+        <div class="row" style="margin-top:12px;">
+          <button id="btn-backtest">Lanzar Backtest</button>
+        </div>
+        <pre id="backtest-result" class="logbox">Esperando ejecucion...</pre>
+      </div>
+
+      <div class="card">
+        <div class="section-title"><h2>Logs Generales</h2><span class="hint">Ultimas lineas</span></div>
+        <div class="row" style="margin-bottom:10px;">
+          <button class="ghost" id="btn-logs">Refrescar Logs</button>
+        </div>
+        <pre id="logs" class="logbox">No logs loaded yet.</pre>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="section-title"><h2>Notas Rapidas</h2><span class="hint">Operativa y ML</span></div>
+      <div class="info-callout">
+        Accede a la pagina de IA/ML para ver arquitectura, features usadas y como entrenar: <a href="/info/ml">Ir a ML</a>.
+      </div>
+      <div style="display:flex; gap:12px; margin-top:12px;">
+        <button class="danger" id="btn-close-project" style="flex:1;">Cerrar Proyecto Completamente</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function jsonReq(url, opts) {
+      const r = await fetch(url, opts);
+      return r.json();
+    }
+
+    function setStatus(running, pid){
+      const dot = document.getElementById('status-dot');
+      const status = document.getElementById('bot-status');
+      if (running){
+        dot.classList.add('on');
+        dot.classList.remove('off');
+        status.innerText = `Running (pid ${pid})`;
+      } else {
+        dot.classList.add('off');
+        dot.classList.remove('on');
+        status.innerText = 'Stopped';
+      }
+    }
+
+    document.getElementById('btn-start').addEventListener('click', async ()=>{
+      const iterationsVal = document.getElementById('iterations').value;
+      const debug = document.getElementById('debug').checked;
+      const body = {};
+      if (iterationsVal) body.iterations = parseInt(iterationsVal, 10);
+      if (debug) body.debug = true;
+      await jsonReq('/api/bot/start', {method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)});
+      updateStatus();
+    });
+
+    document.getElementById('btn-stop').addEventListener('click', async ()=>{
+      await jsonReq('/api/bot/stop', {method: 'POST'});
+      updateStatus();
+    });
+
+    document.getElementById('btn-backtest').addEventListener('click', async ()=>{
+      const symbol = document.getElementById('symbol').value;
+      const bars = parseInt(document.getElementById('bars').value, 10);
+      const r = await jsonReq('/api/backtest', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({symbol, bars})});
+      document.getElementById('backtest-result').innerText = `Job started: ${r.job_id}`;
+      const jobId = r.job_id;
+      const poll = setInterval(async ()=>{
+        const status = await jsonReq(`/api/backtest/${jobId}`);
+        if(status.status === 'done' || status.status === 'error'){
+          clearInterval(poll);
+          document.getElementById('backtest-result').innerText = JSON.stringify(status.result, null, 2);
+          document.getElementById('kpi-backtest').innerText = status.status.toUpperCase();
+        }
+      }, 2000);
+    });
+
+    document.getElementById('btn-logs').addEventListener('click', async ()=>{
+      const out = await jsonReq('/api/logs');
+      document.getElementById('logs').innerText = out.logs || '(no logs)';
+    });
+
+    document.getElementById('btn-refresh-botlogs').addEventListener('click', async ()=>{
+      const out = await jsonReq('/api/logs?bot=true&lines=200');
+      document.getElementById('bot-logs').innerText = out.logs || '(no logs)';
+    });
+
+    let botLogsInterval = null;
+    function startBotLogsPolling(){
+      if (botLogsInterval) return;
+      botLogsInterval = setInterval(async ()=>{
+        const auto = document.getElementById('auto_logs').checked;
+        if (!auto) return;
+        const out = await jsonReq('/api/logs?bot=true&lines=200');
+        document.getElementById('bot-logs').innerText = out.logs || '(no logs)';
+      }, 1000);
+    }
+    function stopBotLogsPolling(){
+      if (!botLogsInterval) return;
+      clearInterval(botLogsInterval);
+      botLogsInterval = null;
+    }
+
+    async function updateStatus(){
+      const s = await jsonReq('/api/bot/status');
+      if (s.running){
+        setStatus(true, s.pid);
+        startBotLogsPolling();
+      } else {
+        setStatus(false);
+        stopBotLogsPolling();
+      }
+    }
+
+    updateStatus();
+
+    document.getElementById('btn-close-project').addEventListener('click', async ()=>{
+      const confirmed = confirm('⚠️ Esto cerrará el bot, la base de datos y terminará el proceso.\n\n¿Estás seguro de que deseas continuar?');
+      if (!confirmed) return;
+
+      try {
+        await jsonReq('/api/shutdown', {method: 'POST'});
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:var(--bg);color:var(--text);font-family:sans-serif;text-align:center;"><div><h1>Proyecto Cerrado</h1><p>Todos los procesos han sido terminados correctamente.</p><p>Puedes cerrar esta ventana.</p></div></div>';
+      } catch (e) {
+        alert('Error al cerrar: ' + e.message);
+      }
+    });
+  </script>
+</body>
+</html>
