@@ -5,7 +5,7 @@ import logging
 import pickle
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Optional
 
 import numpy as np
 
@@ -48,7 +48,7 @@ class KnowledgeBase:
 
         self.metadata = self._load_or_create_metadata()
 
-    def _load_or_create_metadata(self) -> Dict:
+    def _load_or_create_metadata(self) -> dict:
         """Metadata del KB (cuándo se actualizó, versión, etc)"""
         path = self.kb_dir / "metadata.json"
         if path.exists():
@@ -71,7 +71,7 @@ class KnowledgeBase:
         self._save_metadata(metadata)
         return metadata
 
-    def _save_metadata(self, data: Dict):
+    def _save_metadata(self, data: dict):
         """Guarda metadata"""
         data["last_updated"] = datetime.now().isoformat()
         with open(self.kb_dir / "metadata.json", "w") as f:
@@ -82,16 +82,14 @@ class KnowledgeBase:
     # FEATURE IMPORTANCE: Qué variables importan más
     # ============================================================
 
-    def save_feature_importance(self, model, feature_names: List[str]) -> Dict:
+    def save_feature_importance(self, model, feature_names: list[str]) -> dict:
         """
         Guarda ranking de importancia de features.
 
         Las futuras IAs sabrán: "Para predecir señal, importa EMA>MACD>RSI"
         """
         importances = model.feature_importances_
-        ranking = sorted(
-            zip(feature_names, importances), key=lambda x: x[1], reverse=True
-        )
+        ranking = sorted(zip(feature_names, importances, strict=False), key=lambda x: x[1], reverse=True)
 
         data = {
             "timestamp": datetime.now().isoformat(),
@@ -114,9 +112,7 @@ class KnowledgeBase:
     # FEATURE EMBEDDINGS: Representaciones internas
     # ============================================================
 
-    def save_feature_embeddings(
-        self, model, X_train: np.ndarray, feature_names: List[str]
-    ) -> Dict:
+    def save_feature_embeddings(self, model, X_train: np.ndarray, feature_names: list[str]) -> dict:
         """
         Extrae "embeddings" del RF (posiciones en árboles internos).
         Futuras IAs pueden usar esto como inicialización de redes neuronales.
@@ -151,9 +147,7 @@ class KnowledgeBase:
     # CORRELATION MATRIX: Relaciones entre features
     # ============================================================
 
-    def save_correlation_matrix(
-        self, X_train: np.ndarray, feature_names: List[str]
-    ) -> Dict:
+    def save_correlation_matrix(self, X_train: np.ndarray, feature_names: list[str]) -> dict:
         """
         Matriz de correlación entre features.
         Las futuras IAs entienden qué features son redundantes o complementarios.
@@ -203,7 +197,7 @@ class KnowledgeBase:
     # DECISION PATTERNS: Reglas aprendidas
     # ============================================================
 
-    def save_decision_patterns(self, model, feature_names: List[str]) -> Dict:
+    def save_decision_patterns(self, model, feature_names: list[str]) -> dict:
         """
         Extrae reglas de decisión del RF.
         Ej: "Si EMA_fast > 100 y RSI < 70 → BUY"
@@ -251,9 +245,7 @@ class KnowledgeBase:
         data = {
             "timestamp": datetime.now().isoformat(),
             "total_patterns": len(patterns),
-            "patterns_by_feature": {
-                feat: len(pats) for feat, pats in patterns_by_feature.items()
-            },
+            "patterns_by_feature": {feat: len(pats) for feat, pats in patterns_by_feature.items()},
             "sample_patterns": patterns[:20],  # Top 20 para visualizar
             "description": "Decision rules extracted from RandomForest trees",
         }
@@ -271,32 +263,29 @@ class KnowledgeBase:
 
     def save_performance_metrics(
         self, model, X_val: np.ndarray, y_val: np.ndarray, y_pred: np.ndarray
-    ) -> Dict:
+    ) -> dict:
         """
         Guarda métricas de performance del modelo.
         Futuras IAs saben cuán confiable es este conocimiento.
         """
-        from sklearn.metrics import (accuracy_score, confusion_matrix,
-                                     f1_score, precision_score, recall_score)
+        from sklearn.metrics import (
+            accuracy_score,
+            confusion_matrix,
+            f1_score,
+            precision_score,
+            recall_score,
+        )
 
         metrics = {
             "timestamp": datetime.now().isoformat(),
             "model_type": "RandomForestClassifier",
             "validation_set_size": X_val.shape[0],
             "accuracy": float(accuracy_score(y_val, y_pred)),
-            "precision": float(
-                precision_score(y_val, y_pred, average="weighted", zero_division=0)
-            ),
-            "recall": float(
-                recall_score(y_val, y_pred, average="weighted", zero_division=0)
-            ),
-            "f1_score": float(
-                f1_score(y_val, y_pred, average="weighted", zero_division=0)
-            ),
+            "precision": float(precision_score(y_val, y_pred, average="weighted", zero_division=0)),
+            "recall": float(recall_score(y_val, y_pred, average="weighted", zero_division=0)),
+            "f1_score": float(f1_score(y_val, y_pred, average="weighted", zero_division=0)),
             "confusion_matrix": confusion_matrix(y_val, y_pred).tolist(),
-            "model_confidence": (
-                "HIGH" if accuracy_score(y_val, y_pred) > 0.75 else "MEDIUM"
-            ),
+            "model_confidence": ("HIGH" if accuracy_score(y_val, y_pred) > 0.75 else "MEDIUM"),
         }
 
         path = self.kb_dir / "performance_metrics.json"
@@ -317,9 +306,9 @@ class KnowledgeBase:
         self,
         X_train: np.ndarray,
         y_train: np.ndarray,
-        feature_names: List[str],
-        class_names: List[str],
-    ) -> Dict:
+        feature_names: list[str],
+        class_names: list[str],
+    ) -> dict:
         """
         Estadísticas del dataset de entrenamiento.
         Futuras IAs entienden la distribución de datos.
@@ -361,7 +350,7 @@ class KnowledgeBase:
     # TRADE PATTERNS: Patrones ganadores vs perdedores
     # ============================================================
 
-    def save_trade_patterns(self, trades_history: List[Dict]) -> Dict:
+    def save_trade_patterns(self, trades_history: list[dict]) -> dict:
         """
         Analiza trades históricos para identificar patrones.
         Ej: Trades de lunes 10am con RSI<30 ganan 75% de las veces.
@@ -383,21 +372,13 @@ class KnowledgeBase:
             "losing_trades": len(losing_trades),
             "win_rate": float(win_rate),
             "avg_win_pnl": (
-                float(np.mean([t.get("pnl", 0) for t in winning_trades]))
-                if winning_trades
-                else 0
+                float(np.mean([t.get("pnl", 0) for t in winning_trades])) if winning_trades else 0
             ),
             "avg_loss_pnl": (
-                float(np.mean([t.get("pnl", 0) for t in losing_trades]))
-                if losing_trades
-                else 0
+                float(np.mean([t.get("pnl", 0) for t in losing_trades])) if losing_trades else 0
             ),
-            "patterns_by_hour": self._analyze_patterns_by_attribute(
-                trades_history, "hour"
-            ),
-            "patterns_by_symbol": self._analyze_patterns_by_attribute(
-                trades_history, "symbol"
-            ),
+            "patterns_by_hour": self._analyze_patterns_by_attribute(trades_history, "hour"),
+            "patterns_by_symbol": self._analyze_patterns_by_attribute(trades_history, "symbol"),
         }
 
         # Guardar
@@ -407,12 +388,12 @@ class KnowledgeBase:
         with open(self.kb_dir / "trade_patterns" / "analysis.json", "w") as f:
             json.dump(patterns, f, indent=2)
 
-        logger.info(f"✅ Trade patterns guardados")
+        logger.info("✅ Trade patterns guardados")
         logger.info(f"   Win Rate: {win_rate:.1%}")
 
         return patterns
 
-    def _analyze_patterns_by_attribute(self, trades: List[Dict], attr: str) -> Dict:
+    def _analyze_patterns_by_attribute(self, trades: list[dict], attr: str) -> dict:
         """Helper para análisis por atributo"""
         analysis = {}
         for trade in trades:
@@ -428,9 +409,7 @@ class KnowledgeBase:
         # Calcular win rate por key
         for key in analysis:
             total = analysis[key]["wins"] + analysis[key]["losses"]
-            analysis[key]["win_rate"] = (
-                analysis[key]["wins"] / total if total > 0 else 0
-            )
+            analysis[key]["win_rate"] = analysis[key]["wins"] / total if total > 0 else 0
 
         return analysis
 
@@ -456,7 +435,7 @@ class KnowledgeBase:
     # LECTURA DE CONOCIMIENTO (para futuras IAs)
     # ============================================================
 
-    def get_feature_importance(self) -> Optional[Dict]:
+    def get_feature_importance(self) -> Optional[dict]:
         """Lee importancia de features"""
         path = self.kb_dir / "feature_importance.json"
         if path.exists():
@@ -464,7 +443,7 @@ class KnowledgeBase:
                 return json.load(f)
         return None
 
-    def get_feature_embeddings(self) -> Optional[Dict]:
+    def get_feature_embeddings(self) -> Optional[dict]:
         """Lee embeddings"""
         path = self.kb_dir / "feature_embeddings.json"
         if path.exists():
@@ -472,7 +451,7 @@ class KnowledgeBase:
                 return json.load(f)
         return None
 
-    def get_correlation_matrix(self) -> Optional[Dict]:
+    def get_correlation_matrix(self) -> Optional[dict]:
         """Lee matriz de correlación"""
         path = self.kb_dir / "correlation_matrix.json"
         if path.exists():
@@ -480,7 +459,7 @@ class KnowledgeBase:
                 return json.load(f)
         return None
 
-    def get_decision_patterns(self) -> Optional[Dict]:
+    def get_decision_patterns(self) -> Optional[dict]:
         """Lee patrones de decisión"""
         path = self.kb_dir / "decision_patterns.json"
         if path.exists():
@@ -488,7 +467,7 @@ class KnowledgeBase:
                 return json.load(f)
         return None
 
-    def get_performance_metrics(self) -> Optional[Dict]:
+    def get_performance_metrics(self) -> Optional[dict]:
         """Lee métricas de performance"""
         path = self.kb_dir / "performance_metrics.json"
         if path.exists():
@@ -500,23 +479,33 @@ class KnowledgeBase:
         """Carga el modelo guardado"""
         path = self.kb_dir / "models" / filename
         if path.exists():
-            with open(path, "rb") as f:
-                return pickle.load(f)
+            try:
+                import joblib
+
+                return joblib.load(path)
+            except Exception:
+                with open(path, "rb") as f:
+                    return pickle.load(f)
         return None
 
     def load_scaler(self, filename: str = "feature_scaler.pkl"):
         """Carga el escalador guardado"""
         path = self.kb_dir / "models" / filename
         if path.exists():
-            with open(path, "rb") as f:
-                return pickle.load(f)
+            try:
+                import joblib
+
+                return joblib.load(path)
+            except Exception:
+                with open(path, "rb") as f:
+                    return pickle.load(f)
         return None
 
     # ============================================================
     # RESUMEN GENERAL
     # ============================================================
 
-    def get_summary(self) -> Dict:
+    def get_summary(self) -> dict:
         """Resumen de todo el conocimiento disponible"""
         return {
             "metadata": self.metadata,

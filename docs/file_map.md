@@ -21,7 +21,7 @@ Carpeta canonical del paquete Python. Importar siempre desde `src`.
 
 ## `src/data/`
 - `trading_phantom.db`: SQLite para persistencia ligera (si se usa).
-- `models/` (e.g. `advanced_model.pkl`): modelos serializados para inferencia rápida.
+- `models/` (e.g. `advanced_model.joblib`): modelos serializados para inferencia rápida.
 
 ## `scripts/`
 - `launcher.py`: helper para iniciar componentes y asegurar `PYTHONPATH=src` en entornos Windows/CI.

@@ -60,7 +60,7 @@ Get-Content bot_execution_*.log -Tail 50
 - `config/config.yaml` - Parámetros del bot
 
 **Modelos:**
-- `src/data/models/advanced_model.pkl` - ML Model (95% accuracy)
+- `src/data/models/advanced_model.joblib` - ML Model (95% accuracy)
 
 **Base de Datos:**
 - `src/data/trading_phantom.db` - Historial de trades

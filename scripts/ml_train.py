@@ -8,12 +8,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from trading_phantom.analytics.db import init_db
 from trading_phantom.analytics.ml_pipeline import StrategyModel
-from trading_phantom.analytics.transfer_learning import \
-    TransferLearningPipeline
 
-logging.basicConfig(
-    level=logging.INFO, format="[%(asctime)s] %(levelname)s %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -49,16 +45,32 @@ def main():
     logger.info("\n" + "=" * 60)
     logger.info("🎉 ENTRENAMIENTO COMPLETADO EXITOSAMENTE")
     logger.info("=" * 60)
-    logger.info(f"\n📊 Métricas del Modelo:")
+    logger.info("\n📊 Métricas del Modelo:")
     logger.info(f"   • Accuracy:    {res.get('accuracy', 0):.2%}")
     logger.info(f"   • Muestras:    {res.get('n_samples', 0)}")
-    logger.info(f"   • Modelo:      Random Forest (100 árboles)")
-    logger.info(f"   • Features:    7 características derivadas de trades")
-    logger.info(f"\n📂 Ubicación del modelo: src/data/models/")
-    logger.info(
-        f"\n✅ El bot puede usar este modelo cuando esté habilitado en config.yaml"
-    )
+    logger.info("   • Modelo:      Random Forest (100 árboles)")
+    logger.info("   • Features:    7 características derivadas de trades")
+    logger.info("\n📂 Ubicación del modelo: src/data/models/")
+    logger.info("\n✅ El bot puede usar este modelo cuando esté habilitado en config.yaml")
     logger.info("=" * 60 + "\n")
+
+    # Save model if requested
+    if args.save and res.get("status") == "trained":
+        try:
+            from trading_phantom.analytics.model_store import save_model_versioned
+
+            model_data = {
+                "model": getattr(model, "model", None),
+                "metrics": res,
+                "model_type": "random_forest",
+                "timestamp": datetime.now().isoformat(),
+            }
+            saved = save_model_versioned(
+                model_data, base_name="strategy_model", models_dir="src/data/models"
+            )
+            logger.info(f"💾 Modelo guardado (versionado) en: {saved}")
+        except Exception:
+            logger.exception("Error al guardar el modelo de forma versionada")
 
 
 if __name__ == "__main__":

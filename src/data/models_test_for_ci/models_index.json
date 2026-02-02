@@ -1,0 +1,20 @@
+[
+  {
+    "filename": "tst_20260202T165725Z.joblib",
+    "path": "C:/Users/Peruano Pinto/AppData/Local/Temp/pytest-of-Peruano Pinto/pytest-30/test_save_and_load_latest_tmpd0/models/tst_20260202T165725Z.joblib",
+    "timestamp": "20260202T165725Z",
+    "metrics": {
+      "accuracy": 0.42
+    },
+    "model_type": "test_dummy"
+  },
+  {
+    "filename": "tst_20260202T165725Z.joblib",
+    "path": "C:/Users/Peruano Pinto/AppData/Local/Temp/pytest-of-Peruano Pinto/pytest-30/test_save_and_load_latest_tmpd0/models/tst_20260202T165725Z.joblib",
+    "timestamp": "20260202T165725Z",
+    "metrics": {
+      "accuracy": 0.42
+    },
+    "model_type": "test_dummy"
+  }
+]

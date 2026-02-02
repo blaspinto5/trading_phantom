@@ -1,19 +1,64 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+#                     TRADING PHANTOM - Pre-commit Configuration
+# ═══════════════════════════════════════════════════════════════════════════════
+# Install: pre-commit install
+# Run manually: pre-commit run --all-files
+# ═══════════════════════════════════════════════════════════════════════════════
+
 repos:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Code Formatting
+  # ─────────────────────────────────────────────────────────────────────────────
   - repo: https://github.com/psf/black
     rev: 24.1.0
     hooks:
       - id: black
         language_version: python3
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.261
-    hooks:
-      - id: ruff
+        args: [--line-length=100]
+
   - repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+    rev: 5.13.2
     hooks:
       - id: isort
+        args: [--profile=black]
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Linting
+  # ─────────────────────────────────────────────────────────────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.14
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # General Hooks
+  # ─────────────────────────────────────────────────────────────────────────────
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
       - id: end-of-file-fixer
+        exclude: ^(legacy|archive)/
       - id: trailing-whitespace
+        exclude: ^(legacy|archive)/
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      - id: detect-private-key
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Security
+  # ─────────────────────────────────────────────────────────────────────────────
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.7
+    hooks:
+      - id: bandit
+        args: [-c, pyproject.toml]
+        additional_dependencies: ["bandit[toml]"]
+        exclude: ^tests/
+
+# Exclude legacy directories
+exclude: ^(legacy|archive)/

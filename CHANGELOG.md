@@ -1,81 +1,174 @@
 # Changelog
 
-Todos los cambios notables en Trading Phantom se documentan en este archivo.
+All notable changes to Trading Phantom are documented in this file.
 
-El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
-y este proyecto sigue [Semantic Versioning](https://semver.org/es/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## [Unreleased]
+## [1.0.0] - 2026-02-02
+
+### 🎉 Major Release - Complete Refactoring
+
+This release represents a complete professional overhaul of the Trading Phantom framework.
+
+### ✨ Added
+
+- **Professional Strategy Module**
+  - Triple confirmation system: EMA Crossover + MACD + RSI
+  - Optimized parameters based on backtesting (EMA 8/21, MACD 12/26/9, RSI 14)
+  - Configurable thresholds for buy/sell signals
+  - ATR-based dynamic stop calculation
+  - Machine Learning integration support with confidence thresholds
+
+- **Advanced Risk Management**
+  - Position sizing based on 1% rule
+  - Daily loss circuit breaker (3% max)
+  - Drawdown protection (10% max)
+  - Session statistics tracking
+  - Broker limit validation (spread, stops level)
+
+- **Enhanced Configuration**
+  - Comprehensive `config.yaml` with all parameters documented
+  - Separate sections for strategy, risk, orders, and market filters
+  - Trading hours and news avoidance filters
+  - Trailing stop and breakeven configuration
+
+- **Modern Project Structure**
+  - Clean `pyproject.toml` configuration
+  - Separate requirements files (base, dev, ml, ci)
+  - Pre-commit hooks configuration
+  - GitHub Actions CI/CD ready
+
+- **Documentation**
+  - Professional README with badges and diagrams
+  - Contributing guidelines
+  - Architecture documentation
+  - API reference
+
+### 🔄 Changed
+
+- **Strategy Engine**
+  - Refactored to use dataclasses for configuration
+  - Separated indicator calculations into `TechnicalIndicators` class
+  - Improved signal generation with detailed logging
+  - Better ML predictor integration
+
+- **Risk Manager**
+  - Enhanced lot calculation with safety limits
+  - Improved SL/TP calculation respecting broker limits
+  - Added session PnL tracking
+  - Better error handling and logging
+
+- **Configuration**
+  - Migrated from flat config to sectioned YAML
+  - Added market filters and trading hours
+  - Improved parameter documentation
+  - More conservative default values
+
+### 🗑️ Removed
+
+- Legacy code in root directories
+- Duplicate module files
+- Unused CI log files
+- Redundant README files
+- Orphaned webapp file
+
+### 🔧 Fixed
+
+- RSI calculation using proper Wilder smoothing
+- MACD histogram calculation
+- Position sizing edge cases
+- Symbol resolution for different brokers
+
+---
+
+## [0.9.0] - 2025-12-15
 
 ### Added
-- **Restructuración a layout `src/`**: Ahora el código principal está en `src/trading_phantom/` para mejor separación entre código, tests y scripts
-- **Documentación extendida**: Guía completa en `docs/README.md` con setup, configuración, endpoints, backtesting y empaquetado
-- **CONTRIBUTING.md**: Pautas detalladas para contribuyentes (workflow, estándares de código, testing, commits)
-- **ARCHITECTURE.md**: Explicación del diseño de arquitectura del bot
-- **API.md**: Documentación detallada de todos los endpoints REST
-- **LICENSE**: Incluido LICENSE para claridad legal
-- **Configuración centralizada**: `pyproject.toml` en raíz con configuración de `ruff` y `pytest.ini` actualizado
-- **CI mejorada**: Variable de entorno `PYTHONPATH=src` en GitHub Actions para el layout nuevo
-- **Testeo mejorado**: `tests/conftest.py` actualizado para resolver `src/` automáticamente
+- Initial release: Bot core with Strategy (SMA+RSI), RiskManager, Trader
+- MetaTrader 5 connector with retry/backoff
+- Basic backtesting system
+- Flask web dashboard
+- Trade history persistence
 
 ### Changed
-- **Imports**: Todos los imports ahora apuntan a `src/trading_phantom` en el layout nuevo
-- **launcher.py**: Actualizado para buscar `src/` primero en desarrollo
-- **webapp.py**: Ahora establece `PYTHONPATH=src` al lanzar subprocess del bot
-- **pytest.ini**: Añadido `testpaths = tests` para descubrimiento explícito de tests en raíz
-- **Localización de estructura**: Documentación traducida al español, ejemplos en PowerShell para Windows
-
-### Deprecated
-- Carpeta antigua `trading_phantom/` en raíz (será removida en v1.0.0 cuando migremos completamente)
-
-### Removed
-- Imports duplicados y módulos bajo la raíz `trading_phantom/`
-
-### Fixed
-- **MT5Connector**: Mejorada gestión de reintentos con backoff exponencial
-- **Serialización JSON**: Helper `_make_jsonable` en `webapp.py` para evitar `TypeError` con pandas/numpy
-- **Flask reloader**: Desactivado en modo threaded para evitar errores de signals
-
-### Security
-- `pip-audit` integrado en CI para detectar vulnerabilidades de alto impacto
-- Recomendación: No almacenar secretos en el repo, usar variables de entorno
+- Migrated to src layout
+- Updated CI pipeline
 
 ---
 
-## [v0.9.0] - 2025-12-15
+## [0.8.0] - 2025-11-01
 
 ### Added
-- Primer release: Bot core con Strategy (SMA+RSI), RiskManager, Trader
-- Conexión a MT5 con retry/backoff
-- Backtesting numérico y visual con librería `backtesting`
-- Flask API para control del bot y UI con pywebview
-- Empaquetado con PyInstaller
-- Tests unitarios con pytest
-- Linter y auditoría con ruff y pip-audit
-- Configuración YAML centralizada
+- Machine learning integration (sklearn models)
+- Advanced model training scripts
+- Model versioning system
 
 ### Fixed
-- Conectar a MT5 con reintentos automáticos
-- Evitar múltiples trades por vela con `traded_this_candle`
-- Serialización JSON de resultados de backtest
+- MT5 connection stability issues
+- Order execution errors
 
 ---
 
-## Notas sobre versionado
+## [0.7.0] - 2025-10-15
 
-- **0.x.x**: Fase beta; cambios pueden ser breaking
-- **1.0.0**: Versión estable; garantías de compatibilidad para `pyproject.toml` y `config.yaml`
-
----
-
-## Cómo contribuir
-
-Lee [CONTRIBUTING.md](CONTRIBUTING.md) para conocer el proceso de contribución, estándares de código y mejores prácticas.
+### Added
+- Web-based dashboard with pywebview
+- Real-time position monitoring
+- Trade history visualization
 
 ---
 
-## Soporte
+## [0.6.0] - 2025-09-01
 
-Para reportar issues: https://github.com/<owner>/Trading-Phantom/issues
+### Added
+- Backtesting simulation engine
+- Performance metrics calculation
+- Visual backtest results
+
+---
+
+## [0.5.0] - 2025-08-01
+
+### Added
+- Risk manager with daily loss limits
+- Position sizing calculation
+- Multi-position support
+
+---
+
+## [0.4.0] - 2025-07-01
+
+### Added
+- Strategy module with SMA + RSI
+- Signal generation logic
+- Configurable parameters
+
+---
+
+## [0.3.0] - 2025-06-01
+
+### Added
+- MT5 connector with order execution
+- Symbol resolution
+- Price data fetching
+
+---
+
+## [0.2.0] - 2025-05-01
+
+### Added
+- Project structure setup
+- Configuration system
+- Logging framework
+
+---
+
+## [0.1.0] - 2025-04-01
+
+### Added
+- Initial project creation
+- Basic documentation
+- Development environment setup

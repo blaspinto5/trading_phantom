@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +14,13 @@ class Trader:
     # =========================
     # EJECUTAR OPERACIÓN
     # =========================
-    def execute(self, signal: str, price: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        """Ejecuta una orden si el risk_manager lo permite; devuelve un diccionario con detalles del trade o None."""
+    def execute(self, signal: str, price: dict[str, Any]) -> Optional[dict[str, Any]]:
+        """
+        Ejecuta una orden si el risk_manager lo permite.
+
+        Returns:
+            Dict con detalles del trade o None si fue bloqueado.
+        """
 
         check = self.risk.check(signal, price)
 
@@ -78,9 +83,7 @@ class Trader:
             if result and getattr(result, "retcode", None) == 10009:
                 logger.info("🔒 Posición %s cerrada", getattr(pos, "ticket", None))
             else:
-                logger.error(
-                    "❌ Error cerrando posición %s", getattr(pos, "ticket", None)
-                )
+                logger.error("❌ Error cerrando posición %s", getattr(pos, "ticket", None))
 
     # =========================
     # ACTUALIZAR PÉRDIDA DIARIA

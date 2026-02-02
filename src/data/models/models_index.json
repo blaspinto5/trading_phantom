@@ -1,0 +1,43 @@
+[
+  {
+    "filename": "lstm_model_20260112T225159Z.joblib",
+    "path": "src/data/models/lstm_model_20260112T225159Z.joblib",
+    "timestamp": "20260112T225159Z",
+    "metrics": {
+      "status": "trained",
+      "loss": 0.6975934505462646
+    },
+    "model_type": "lstm_minimal"
+  },
+  {
+    "filename": "rl_agent_20260112T200953Z.joblib",
+    "path": "src/data/models/rl_agent_20260112T200953Z.joblib",
+    "timestamp": "20260112T200953Z",
+    "metrics": {},
+    "model_type": "rl_agent_proto"
+  },
+  {
+    "filename": "rl_agent_20260112T200803Z.joblib",
+    "path": "src/data/models/rl_agent_20260112T200803Z.joblib",
+    "timestamp": "20260112T200803Z",
+    "metrics": {},
+    "model_type": "rl_agent_proto"
+  },
+  {
+    "filename": "lstm_model_20260112T200707Z.joblib",
+    "path": "src/data/models/lstm_model_20260112T200707Z.joblib",
+    "timestamp": "20260112T200707Z",
+    "metrics": {
+      "status": "trained",
+      "loss": 0.6975593566894531
+    },
+    "model_type": "lstm_minimal"
+  },
+  {
+    "filename": "rl_agent_20260112T195640Z.joblib",
+    "path": "src/data/models/rl_agent_20260112T195640Z.joblib",
+    "timestamp": "20260112T195640Z",
+    "metrics": {},
+    "model_type": "rl_agent_proto"
+  }
+]

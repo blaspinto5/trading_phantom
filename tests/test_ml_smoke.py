@@ -5,11 +5,18 @@ from scripts.ml_train_advanced import AdvancedStrategyModel
 
 
 def make_synthetic_trades(n=80):
+    """
+    Genera trades sintéticos con formato compatible con AdvancedStrategyModel.
+
+    Nota: side debe ser numérico (1=BUY, -1=SELL) ya que _load_trade_df
+    convierte los strings a este formato.
+    """
     rng = np.random.RandomState(42)
     symbols = ["EURUSD", "GBPUSD", "USDJPY"]
     rows = []
     for i in range(n):
-        side = rng.choice(["BUY", "SELL"])
+        # side ya convertido a formato numérico
+        side = rng.choice([1, -1])  # 1=BUY, -1=SELL
         price = float(1.0 + rng.randn() * 0.01)
         volume = float(rng.randint(1, 10))
         pnl = float(rng.randn())

@@ -2,7 +2,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -13,13 +13,13 @@ class TradeHistory:
     def __init__(self, history_file: str = "logs/trade_history.json"):
         self.history_file = Path(history_file)
         self.history_file.parent.mkdir(parents=True, exist_ok=True)
-        self.trades: List[Dict[str, Any]] = self._load_history()
+        self.trades: list[dict[str, Any]] = self._load_history()
 
-    def _load_history(self) -> List[Dict[str, Any]]:
+    def _load_history(self) -> list[dict[str, Any]]:
         """Carga el historial desde archivo."""
         if self.history_file.exists():
             try:
-                with open(self.history_file, "r") as f:
+                with open(self.history_file) as f:
                     return json.load(f)
             except Exception as e:
                 logger.error(f"Error cargando historial: {e}")
@@ -62,9 +62,7 @@ class TradeHistory:
         }
         self.trades.append(trade)
         self._save_history()
-        logger.info(
-            f"📝 Trade abierto: {signal} | Ticket: {ticket} | Precio: {entry_price}"
-        )
+        logger.info(f"📝 Trade abierto: {signal} | Ticket: {ticket} | Precio: {entry_price}")
 
     def close_trade(self, ticket: int, exit_price: float, profit_loss: float) -> None:
         """Cierra una operación registrando salida y P/L."""
@@ -75,13 +73,11 @@ class TradeHistory:
                 trade["profit_loss"] = profit_loss
                 trade["status"] = "CLOSED"
                 self._save_history()
-                logger.info(
-                    f"🔒 Trade cerrado: Ticket {ticket} | P/L: ${profit_loss:.2f}"
-                )
+                logger.info(f"🔒 Trade cerrado: Ticket {ticket} | P/L: ${profit_loss:.2f}")
                 return
         logger.warning(f"⚠️ No se encontró trade con ticket {ticket}")
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Retorna un resumen de estadísticas."""
         closed_trades = [t for t in self.trades if t["status"] == "CLOSED"]
         open_trades = [t for t in self.trades if t["status"] == "OPEN"]
@@ -100,9 +96,7 @@ class TradeHistory:
                 "worst_trade": None,
             }
 
-        profits = [
-            t["profit_loss"] for t in closed_trades if t["profit_loss"] is not None
-        ]
+        profits = [t["profit_loss"] for t in closed_trades if t["profit_loss"] is not None]
         won = sum(1 for p in profits if p > 0)
         lost = sum(1 for p in profits if p < 0)
         total_profit = sum(p for p in profits if p > 0)
@@ -143,6 +137,6 @@ class TradeHistory:
             logger.info(f"📉 Peor trade: ${summary['worst_trade']:.2f}")
         logger.info("=" * 60)
 
-    def get_recent_trades(self, limit: int = 10) -> List[Dict[str, Any]]:
+    def get_recent_trades(self, limit: int = 10) -> list[dict[str, Any]]:
         """Retorna los últimos N trades."""
         return self.trades[-limit:]

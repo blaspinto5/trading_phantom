@@ -11,6 +11,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+import joblib
 import numpy as np
 import pandas as pd
 
@@ -20,16 +21,14 @@ src = root / "src"
 if str(src) not in sys.path:
     sys.path.insert(0, str(src))
 
-logging.basicConfig(
-    level=logging.INFO, format="[%(asctime)s] %(levelname)s %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 
 class AdvancedBacktestEngine:
     """Backtesting engine using advanced ML model"""
 
-    def __init__(self, model_path="src/data/models/advanced_model.pkl"):
+    def __init__(self, model_path="src/data/models/advanced_model.joblib"):
         self.model_path = model_path
         self.model_data = None
         self.load_model()
@@ -37,8 +36,12 @@ class AdvancedBacktestEngine:
     def load_model(self):
         """Load trained model from disk"""
         try:
-            with open(self.model_path, "rb") as f:
-                self.model_data = pickle.load(f)
+            # Try joblib first (preferred), then fall back to pickle for older files
+            try:
+                self.model_data = joblib.load(self.model_path)
+            except Exception:
+                with open(self.model_path, "rb") as f:
+                    self.model_data = pickle.load(f)
             logger.info(f"✅ Advanced model loaded from {self.model_path}")
             return True
         except FileNotFoundError:
@@ -238,9 +241,7 @@ def print_backtest_results(results):
 
     print("\n📊 TRADE STATISTICS:")
     print(f"   • Total Trades:        {summary['total_trades']}")
-    print(
-        f"   • Winning Trades:      {summary['winning_trades']} ({summary['win_rate']*100:.2f}%)"
-    )
+    print(f"   • Winning Trades:      {summary['winning_trades']} ({summary['win_rate']*100:.2f}%)")
     print(f"   • Losing Trades:       {summary['losing_trades']}")
 
     print("\n💰 FINANCIAL RESULTS:")

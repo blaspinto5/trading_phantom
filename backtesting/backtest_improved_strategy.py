@@ -7,16 +7,13 @@ import json
 import logging
 import pickle
 import sqlite3
-import sys
 from datetime import datetime
-from pathlib import Path
 
+import joblib
 import numpy as np
 import pandas as pd
 
-logging.basicConfig(
-    level=logging.INFO, format="[%(asctime)s] %(levelname)s %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -29,7 +26,7 @@ class ImprovedTradingStrategy:
     - Position sizing basado en riesgo
     """
 
-    def __init__(self, model_path="src/data/models/advanced_model.pkl"):
+    def __init__(self, model_path="src/data/models/advanced_model.joblib"):
         self.model_path = model_path
         self.model_data = None
         self.load_model()
@@ -43,9 +40,13 @@ class ImprovedTradingStrategy:
     def load_model(self):
         """Load trained model from disk"""
         try:
-            with open(self.model_path, "rb") as f:
-                self.model_data = pickle.load(f)
-            logger.info(f"✅ Advanced model loaded")
+            # Try joblib first (preferred), then fall back to pickle for older files
+            try:
+                self.model_data = joblib.load(self.model_path)
+            except Exception:
+                with open(self.model_path, "rb") as f:
+                    self.model_data = pickle.load(f)
+            logger.info("✅ Advanced model loaded")
             return True
         except FileNotFoundError:
             logger.error(f"❌ Model file not found at {self.model_path}")
@@ -217,9 +218,7 @@ class ImprovedTradingStrategy:
 
             if pred == 1:  # Señal de rentabilidad
                 signals_taken += 1
-                new_equity, pnl, exit_reason = self.simulate_trade_with_risk_management(
-                    row, equity
-                )
+                new_equity, pnl, exit_reason = self.simulate_trade_with_risk_management(row, equity)
 
                 trade_info = {
                     "index": i,

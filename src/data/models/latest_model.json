@@ -1,0 +1,10 @@
+{
+  "filename": "lstm_model_20260112T225159Z.joblib",
+  "path": "src/data/models/lstm_model_20260112T225159Z.joblib",
+  "timestamp": "20260112T225159Z",
+  "metrics": {
+    "status": "trained",
+    "loss": 0.6975934505462646
+  },
+  "model_type": "lstm_minimal"
+}

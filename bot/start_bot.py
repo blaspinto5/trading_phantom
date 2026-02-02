@@ -35,8 +35,10 @@ else:
 
 print()
 print("📊 Verificando modelo ML...")
-model_path = PROJECT_ROOT / "src" / "data" / "models" / "advanced_model.pkl"
-if model_path.exists():
+model_dir = PROJECT_ROOT / "src" / "data" / "models"
+model_path_joblib = model_dir / "advanced_model.joblib"
+model_path_pkl = model_dir / "advanced_model.pkl"
+if model_path_joblib.exists() or model_path_pkl.exists():
     print("✅ Modelo ML: DISPONIBLE (95% accuracy)")
 else:
     print("❌ Modelo ML no encontrado")

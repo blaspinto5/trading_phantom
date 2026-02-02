@@ -7,10 +7,10 @@ Safe parallel execution - No interfiere con bot
 import subprocess
 import sys
 import time
-from datetime import datetime
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).parent.absolute()
+# PROJECT_ROOT should be repository root; compute two levels up when file is inside backtesting/
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 print("=" * 80)
 print("🤖 PARALLEL BACKTEST RUNNER")
@@ -37,17 +37,19 @@ print()
 # 2. Verificar BD
 db_path = PROJECT_ROOT / "src" / "data" / "trading_phantom.db"
 if db_path.exists():
-    print(f"  ✅ Base de datos disponible")
+    print("  ✅ Base de datos disponible")
 else:
-    print(f"  ❌ BD no encontrada")
+    print("  ❌ BD no encontrada")
     sys.exit(1)
 
-# 3. Verificar modelo
-model_path = PROJECT_ROOT / "src" / "data" / "models" / "advanced_model.pkl"
-if model_path.exists():
-    print(f"  ✅ Modelo ML disponible")
+# 3. Verificar modelo (accept joblib or legacy pkl)
+model_dir = PROJECT_ROOT / "src" / "data" / "models"
+model_path_joblib = model_dir / "advanced_model.joblib"
+model_path_pkl = model_dir / "advanced_model.pkl"
+if model_path_joblib.exists() or model_path_pkl.exists():
+    print("  ✅ Modelo ML disponible")
 else:
-    print(f"  ❌ Modelo no encontrado")
+    print("  ❌ Modelo no encontrado")
     sys.exit(1)
 
 print()
@@ -85,7 +87,10 @@ elif choice == "1":
     print("🚀 Ejecutando: Backtest Advanced Model")
     print("-" * 80)
     try:
-        subprocess.run([sys.executable, "backtest_advanced_model.py"], cwd=PROJECT_ROOT)
+        subprocess.run(
+            [sys.executable, str(PROJECT_ROOT / "backtesting" / "backtest_advanced_model.py")],
+            cwd=PROJECT_ROOT,
+        )
     except KeyboardInterrupt:
         print("\n⏹️  Backtesting cancelado por usuario")
 
@@ -94,7 +99,8 @@ elif choice == "2":
     print("-" * 80)
     try:
         subprocess.run(
-            [sys.executable, "backtest_improved_strategy.py"], cwd=PROJECT_ROOT
+            [sys.executable, str(PROJECT_ROOT / "backtesting" / "backtest_improved_strategy.py")],
+            cwd=PROJECT_ROOT,
         )
     except KeyboardInterrupt:
         print("\n⏹️  Backtesting cancelado por usuario")
@@ -107,7 +113,7 @@ elif choice == "3":
     # Crear dos procesos
     print("Iniciando Backtest Advanced Model...")
     proc1 = subprocess.Popen(
-        [sys.executable, "backtest_advanced_model.py"],
+        [sys.executable, str(PROJECT_ROOT / "backtesting" / "backtest_advanced_model.py")],
         cwd=PROJECT_ROOT,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -115,7 +121,7 @@ elif choice == "3":
 
     print("Iniciando Backtest Improved Strategy...")
     proc2 = subprocess.Popen(
-        [sys.executable, "backtest_improved_strategy.py"],
+        [sys.executable, str(PROJECT_ROOT / "backtesting" / "backtest_improved_strategy.py")],
         cwd=PROJECT_ROOT,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -167,7 +173,7 @@ elif choice == "4":
     print("-" * 80)
     try:
         subprocess.run(
-            [sys.executable, "scripts/ml_train_advanced.py", "--no-save"],
+            [sys.executable, str(PROJECT_ROOT / "scripts" / "ml_train_advanced.py"), "--no-save"],
             cwd=PROJECT_ROOT,
         )
     except KeyboardInterrupt:

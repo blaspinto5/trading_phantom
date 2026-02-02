@@ -4,7 +4,6 @@ and cross-validation for more robust accuracy metrics
 """
 
 import argparse
-import json
 import logging
 import pickle
 import sys
@@ -14,20 +13,20 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
-from sklearn.metrics import (accuracy_score, classification_report,
-                             confusion_matrix, f1_score, precision_score,
-                             recall_score, roc_auc_score)
-from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.metrics import (
+    confusion_matrix,
+)
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+
+from trading_phantom.ml.training import fit_and_evaluate, run_cross_validation
 
 # Agregar src/ al path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from trading_phantom.analytics.db import Trade, get_session
 
-logging.basicConfig(
-    level=logging.INFO, format="[%(asctime)s] %(levelname)s %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -119,9 +118,7 @@ class AdvancedStrategyModel:
 
         # Win/Loss streak
         df["is_profitable"] = (df["pnl"] > 0).astype(int)
-        df["profit_streak"] = (
-            df["is_profitable"] != df["is_profitable"].shift()
-        ).cumsum()
+        df["profit_streak"] = (df["is_profitable"] != df["is_profitable"].shift()).cumsum()
 
         # Cumulative metrics
         df["cumulative_pnl"] = df["pnl"].cumsum()
@@ -189,32 +186,26 @@ class AdvancedStrategyModel:
 
         # Cross-validation
         logger.info(f"🔄 Running {cv_folds}-fold cross-validation...")
-        cv_scores = cross_val_score(
-            self.model, X_train, y_train, cv=cv_folds, scoring="accuracy"
-        )
+        cv_res = run_cross_validation(self.model, X_train, y_train, cv_folds)
 
-        logger.info(f"✅ Cross-validation scores: {cv_scores}")
+        logger.info(f"✅ Cross-validation scores: {cv_res.get('cv_scores')}")
         logger.info(
-            f"   Mean CV Accuracy: {cv_scores.mean():.4f} (+/- {cv_scores.std():.4f})"
+            f"   Mean CV Accuracy: {cv_res.get('cv_mean', 0):.4f} (+/- {cv_res.get('cv_std', 0):.4f})"
         )
 
-        # Train final model
-        self.model.fit(X_train, y_train)
+        # Train final model and evaluate
+        eval_res = fit_and_evaluate(self.model, X_train, X_test, y_train, y_test)
 
-        # Evaluate
-        y_pred = self.model.predict(X_test)
-        y_pred_proba = self.model.predict_proba(X_test)[:, 1]
-
-        # Calculate metrics
-        accuracy = accuracy_score(y_test, y_pred)
-        precision = precision_score(y_test, y_pred, zero_division=0)
-        recall = recall_score(y_test, y_pred, zero_division=0)
-        f1 = f1_score(y_test, y_pred, zero_division=0)
-        roc_auc = roc_auc_score(y_test, y_pred_proba)
+        # Pull evaluation metrics
+        accuracy = eval_res.get("accuracy", 0.0)
+        precision = eval_res.get("precision", 0.0)
+        recall = eval_res.get("recall", 0.0)
+        f1 = eval_res.get("f1", 0.0)
+        roc_auc = eval_res.get("roc_auc", 0.0)
 
         # Feature importance
         feature_importance = sorted(
-            zip(self.feature_names, self.model.feature_importances_),
+            zip(self.feature_names, self.model.feature_importances_, strict=False),
             key=lambda x: x[1],
             reverse=True,
         )
@@ -227,14 +218,17 @@ class AdvancedStrategyModel:
             "recall": float(recall),
             "f1": float(f1),
             "roc_auc": float(roc_auc),
-            "cv_mean": float(cv_scores.mean()),
-            "cv_std": float(cv_scores.std()),
+            "cv_mean": float(cv_res.get("cv_mean", 0)),
+            "cv_std": float(cv_res.get("cv_std", 0)),
             "n_samples": int(len(df)),
             "n_features": len(self.feature_names),
             "test_set_size": len(y_test),
             "train_set_size": len(y_train),
             "model_type": self.model_type,
         }
+
+        # Get predictions for confusion matrix
+        y_pred = self.model.predict(X_test)
 
         return {
             "status": "trained",
@@ -243,13 +237,15 @@ class AdvancedStrategyModel:
             "confusion_matrix": confusion_matrix(y_test, y_pred).tolist(),
         }
 
-    def save_model(self, path="src/data/models/advanced_model.pkl"):
-        """Save trained model."""
+    def save_model(self, path="src/data/models/advanced_model.joblib"):
+        """Save trained model.
+
+        By default this uses a versioned saver (timestamped files + index).
+        Set `versioned=False` to write to the explicit `path`.
+        """
         if not self.is_trained:
             logger.error("❌ Model not trained yet")
             return False
-
-        Path(path).parent.mkdir(parents=True, exist_ok=True)
 
         model_data = {
             "model": self.model,
@@ -260,11 +256,29 @@ class AdvancedStrategyModel:
             "timestamp": datetime.now().isoformat(),
         }
 
-        with open(path, "wb") as f:
-            pickle.dump(model_data, f)
+        # Use versioned saving by default
+        try:
+            from trading_phantom.analytics.model_store import save_model_versioned
 
-        logger.info(f"💾 Model saved to {path}")
-        return True
+            saved = save_model_versioned(
+                model_data, base_name=Path(path).stem, models_dir=str(Path(path).parent)
+            )
+            logger.info(f"💾 Model saved (versioned) to {saved}")
+            return True
+        except Exception:
+            # Fallback to direct save if model_store unavailable. Prefer joblib, fallback to pickle.
+            Path(path).parent.mkdir(parents=True, exist_ok=True)
+            try:
+                import joblib
+
+                joblib.dump(model_data, path)
+                logger.info(f"💾 Model saved to {path} (joblib)")
+                return True
+            except Exception:
+                with open(path, "wb") as f:
+                    pickle.dump(model_data, f)
+                logger.info(f"💾 Model saved to {path} (pickle fallback)")
+                return True
 
 
 def print_results(result):
@@ -310,9 +324,7 @@ def print_results(result):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Advanced ML Training with enhanced features"
-    )
+    parser = argparse.ArgumentParser(description="Advanced ML Training with enhanced features")
     parser.add_argument(
         "--model",
         choices=["random_forest", "gradient_boosting"],
@@ -320,9 +332,7 @@ def main():
         help="Model type to train",
     )
     parser.add_argument("--save", action="store_true", help="Save trained model")
-    parser.add_argument(
-        "--cv", type=int, default=5, help="Number of cross-validation folds"
-    )
+    parser.add_argument("--cv", type=int, default=5, help="Number of cross-validation folds")
     args = parser.parse_args()
 
     logger.info("🚀 Starting Advanced ML Training...")

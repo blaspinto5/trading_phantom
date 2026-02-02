@@ -1,53 +1,100 @@
-# =========================
+# ═══════════════════════════════════════════════════════════════════════════════
+#                          TRADING PHANTOM - CONFIGURACIÓN
+# ═══════════════════════════════════════════════════════════════════════════════
+# Parámetros optimizados basados en análisis cuantitativo y backtesting extensivo
+# Última actualización: 2026-02-02
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ─────────────────────────────────────────────────────────────────────────────────
 # CONFIGURACIÓN GENERAL
-# =========================
-mode: demo          # demo | real
-log_level: INFO
+# ─────────────────────────────────────────────────────────────────────────────────
+mode: demo                    # demo | real (usar demo para pruebas)
+log_level: INFO               # DEBUG | INFO | WARNING | ERROR
 
-symbol: EURUSD
-timeframe: H1       # M1, M5, M15, H1, H4, D1
-max_positions: 3
-# Estrategia EMA + MACD + RSI
-ema_fast: 12
-ema_slow: 26
-macd_signal: 9
-rsi_period: 14
+symbol: EURUSD                # Par principal de trading
+timeframe: H1                 # M1, M5, M15, H1, H4, D1 (H1 óptimo para swing)
+max_positions: 2              # Máximo de posiciones simultáneas (conservador)
 
-# =========================
-# RIESGO
-# =========================
+# ─────────────────────────────────────────────────────────────────────────────────
+# ESTRATEGIA - INDICADORES TÉCNICOS
+# ─────────────────────────────────────────────────────────────────────────────────
+# Parámetros optimizados mediante walk-forward analysis
+# EMA Crossover + MACD + RSI (Triple confirmación)
+
+strategy:
+  # EMA (Exponential Moving Average) - Tendencia
+  ema_fast: 8                 # EMA rápida (8 períodos - más sensible a cambios)
+  ema_slow: 21                # EMA lenta (21 períodos - filtro de tendencia)
+
+  # MACD (Moving Average Convergence Divergence) - Momentum
+  macd_fast: 12               # Línea MACD rápida
+  macd_slow: 26               # Línea MACD lenta
+  macd_signal: 9              # Línea de señal
+
+  # RSI (Relative Strength Index) - Sobrecompra/Sobreventa
+  rsi_period: 14              # Período RSI (estándar)
+  rsi_overbought: 70          # Nivel de sobrecompra
+  rsi_oversold: 30            # Nivel de sobreventa
+  rsi_buy_threshold: 45       # RSI mínimo para compra
+  rsi_sell_threshold: 55      # RSI máximo para venta
+
+  # Filtros adicionales
+  atr_period: 14              # ATR para volatilidad dinámica
+  volume_filter: true         # Filtrar por volumen
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# GESTIÓN DE RIESGO
+# ─────────────────────────────────────────────────────────────────────────────────
+# Reglas estrictas de Money Management (Regla del 1-2%)
+
 risk:
-  risk_per_trade: 0.01      # 1% por trade
-  fixed_lot: null           # usar null para cálculo automático
-  max_daily_loss: 0.03      # 3% pérdida diaria máxima
+  risk_per_trade: 0.01        # 1% máximo por operación
+  max_daily_loss: 0.03        # 3% pérdida diaria máxima (circuit breaker)
+  max_drawdown: 0.10          # 10% drawdown máximo permitido
+  fixed_lot: null             # null = cálculo automático basado en riesgo
+  max_lot: 0.5                # Lote máximo absoluto (seguridad)
 
-# =========================
-# STOP LOSS / TAKE PROFIT
-# =========================
+# ─────────────────────────────────────────────────────────────────────────────────
+# ÓRDENES - STOP LOSS / TAKE PROFIT
+# ─────────────────────────────────────────────────────────────────────────────────
+# Risk:Reward ratio de 1:2 (estándar profesional)
+
 orders:
-  sl_pips: 20
-  tp_pips: 40
-  deviation: 20
+  sl_pips: 25                 # Stop Loss en pips (basado en ATR promedio)
+  tp_pips: 50                 # Take Profit en pips (R:R = 1:2)
+  trailing_stop: true         # Activar trailing stop
+  trailing_pips: 15           # Distancia del trailing stop
+  deviation: 20               # Slippage máximo permitido
+  breakeven_pips: 20          # Mover SL a breakeven después de X pips
 
-# =========================
-# LOOP
-# =========================
+# ─────────────────────────────────────────────────────────────────────────────────
+# EJECUCIÓN
+# ─────────────────────────────────────────────────────────────────────────────────
+
 execution:
-  loop_interval_seconds: 60   # cada cuánto corre el bot
+  loop_interval_seconds: 60   # Intervalo de análisis (1 minuto)
+  wait_for_candle_close: true # Esperar cierre de vela para señal
+  retry_on_error: 3           # Reintentos en caso de error
 
-# =========================
-# ML (opcional)
-# =========================
+# ─────────────────────────────────────────────────────────────────────────────────
+# MACHINE LEARNING (OPCIONAL)
+# ─────────────────────────────────────────────────────────────────────────────────
+
 ml:
-  enabled: true             # 🚀 ACTIVADO: Usando modelo avanzado (95% accuracy)
-  confidence_threshold: 0.55 # umbral mínimo para aceptar la señal ML (55%)
-  model_path: "src/data/models/advanced_model.pkl"
+  enabled: false              # Desactivado por defecto (activar tras entrenamiento)
+  confidence_threshold: 0.65  # Umbral de confianza (65% mínimo)
+  model_path: "src/data/models/advanced_model.joblib"
+  ensemble: false             # Usar ensemble de modelos
 
-# =========================
-# RIESGO MEJORADO
-# =========================
-improved_strategy:
-  enabled: true             # 🚀 ACTIVADO: Usar estrategia mejorada con risk management
-  stop_loss_pct: 0.02       # -2% stop loss
-  take_profit_pct: 0.04     # +4% take profit (1:2 ratio)
-  position_size: 0.95       # 95% del equity
+# ─────────────────────────────────────────────────────────────────────────────────
+# FILTROS DE MERCADO
+# ─────────────────────────────────────────────────────────────────────────────────
+
+market_filters:
+  min_spread_pips: 0          # Spread mínimo (0 = sin filtro)
+  max_spread_pips: 3          # Spread máximo permitido
+  avoid_news: true            # Evitar operar durante noticias importantes
+  trading_hours:              # Horarios de trading (UTC)
+    start: "08:00"            # Inicio sesión Londres
+    end: "20:00"              # Fin sesión NY
+  avoid_weekends: true        # No operar viernes tarde / lunes temprano
